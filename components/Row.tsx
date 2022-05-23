@@ -5,7 +5,7 @@ export const Row = ({
   style,
 }: {
   children: any;
-  style: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
 }) => {
   return <View style={[styles.container, style]}>{children}</View>;
 };
