@@ -1,6 +1,7 @@
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Text } from "@ui-kitten/components";
+import { useNavigation } from "@react-navigation/native";
 
 import { Row } from "./Row";
 import { LISTMARGIN } from "../constants";
@@ -42,7 +43,10 @@ export const HeaderLogistics = ({
   mapShown: boolean;
   setMapShown: (bool: boolean) => void;
 }) => {
+  const navigation = useNavigation();
+
   const handleMapPress = () => {
+    navigation.setOptions({ tabBarStyle: { display: "flex" } });
     if (mapShown) return setMapShown(false);
     setMapShown(true);
   };
