@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AccountScreen } from "../screens/AccountScreen";
 import { SavedScreen } from "../screens/SavedScreen";
 import { SearchScreen } from "../screens/SearchScreen";
+import { FindLocationsScreen } from "../screens/FindLocationsScreen";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -49,7 +50,13 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
 
-      <Stack.Group screenOptions={{ presentation: "modal" }}></Stack.Group>
+      <Stack.Group screenOptions={{ presentation: "modal" }}>
+        <Stack.Screen
+          name="FindLocations"
+          component={FindLocationsScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }

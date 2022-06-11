@@ -1,4 +1,4 @@
-import MapView from "react-native-maps";
+import MapView, { Region } from "react-native-maps";
 import { View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -9,9 +9,16 @@ import { MapMarker } from "./MapMarker";
 import { theme } from "../theme";
 import { Card } from "./Card";
 
-export const Map = ({ properties }: { properties: Property[] }) => {
+export const Map = ({
+  properties,
+  mapRef,
+  initialRegion,
+}: {
+  properties: Property[];
+  mapRef: React.MutableRefObject<MapView | null>;
+  initialRegion?: Region | undefined;
+}) => {
   const [activeIndex, setActiveIndex] = useState(-1);
-  const mapRef = useRef<MapView | null>(null);
   const navigation = useNavigation();
 
   const unFocusProperty = () => {
@@ -46,6 +53,7 @@ export const Map = ({ properties }: { properties: Property[] }) => {
         userInterfaceStyle={"light"}
         ref={mapRef}
         onPress={handleMapPress}
+        initialRegion={initialRegion ? initialRegion : undefined}
       >
         {properties.map((i, index) => (
           <MapMarker
