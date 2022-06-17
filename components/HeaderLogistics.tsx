@@ -39,9 +39,11 @@ const HeaderLogisticsButton = ({
 export const HeaderLogistics = ({
   mapShown,
   setMapShown,
+  availableProperties,
 }: {
   mapShown: boolean;
   setMapShown: (bool: boolean) => void;
+  availableProperties?: number;
 }) => {
   const navigation = useNavigation();
 
@@ -60,7 +62,9 @@ export const HeaderLogistics = ({
           color={theme["color-primary-500"]}
         />
         <Text category={"c1"} appearance={"hint"}>
-          12 Available
+          {availableProperties
+            ? `${availableProperties} Spaces Available`
+            : `Search Spaces`}
         </Text>
         <HeaderLogisticsButton
           label="Save"
