@@ -95,7 +95,7 @@ export const SearchScreen = ({
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
-                <Card style={{ marginVertical: 5 }} property={item} />
+                <Card style={styles.card} property={item} />
               )}
             />
           ) : (
@@ -116,7 +116,7 @@ export const SearchScreen = ({
                     source={require("../assets/lotties/SearchScreen.json")}
                   />
                   <Text category={"h6"}>Begin Your Search</Text>
-                  <Text appearance={"hint"}>
+                  <Text appearance={"hint"} style={styles.subHeader}>
                     Find apartments anytime and anywhere.
                   </Text>
                 </View>
@@ -130,6 +130,7 @@ export const SearchScreen = ({
 };
 
 const styles = StyleSheet.create({
+  card: { marginVertical: 5 },
   lottieContainer: {
     backgroundColor: "#fff",
     flex: 1,
@@ -137,4 +138,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   lottie: { height: 200, width: 200 },
+  subHeader: {
+    marginTop: 10,
+  },
 });
