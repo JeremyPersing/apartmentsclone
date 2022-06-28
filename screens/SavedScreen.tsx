@@ -1,6 +1,6 @@
 import { View, StyleSheet, FlatList } from "react-native";
 import { Button, Text } from "@ui-kitten/components";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import LottieView from "lottie-react-native";
 
 import { Screen } from "../components/Screen";
@@ -10,10 +10,11 @@ import { properties } from "../data/properties";
 import { Card } from "../components/Card";
 import { Property } from "../types/property";
 import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
+import { AuthContext } from "../context";
 
 export const SavedScreen = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const user = false;
+  const { user } = useContext(AuthContext);
   const likedProperties = undefined;
   const contactedProperties = undefined;
   const applicationProperties = undefined;
