@@ -1,18 +1,15 @@
 import { ScrollView, View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Text, Button } from "@ui-kitten/components";
-import { useContext } from "react";
 
 import { Screen } from "../components/Screen";
 import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { theme } from "../theme";
 import { ButtonList } from "../components/ButtonList";
-import { AuthContext } from "../context";
 import { useAuth } from "../hooks/useAuth";
 
 export const AccountScreen = () => {
-  const { user } = useContext(AuthContext);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigation = useNavigation();
 
   const firstSignedOutButtons = [
