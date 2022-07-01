@@ -5,6 +5,7 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "react-query";
+import * as Facebook from "expo-auth-session/providers/facebook";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -13,13 +14,17 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { PasswordInput } from "../components/PasswordInput";
 import { OrDivider } from "../components/OrDivider";
-import { loginUser } from "../services/user";
+import { facebookLoginOrRegister, loginUser } from "../services/user";
 import { useAuth } from "../hooks/useAuth";
 import { Loading } from "../components/Loading";
 
 export const SignInScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
+
+  const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: "723313165600806",
+  });
 
   const nativeLogin = useMutation(
     async (values: { email: string; password: string }) => {
@@ -31,7 +36,20 @@ export const SignInScreen = () => {
     }
   );
 
-  if (nativeLogin.isLoading) return <Loading />;
+  const facebookLogin = useMutation(async () => {
+    const response = await fbPromptAsync();
+    if (response.type === "success") {
+      const { access_token } = response.params;
+
+      const user = await facebookLoginOrRegister(access_token);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  });
+
+  if (nativeLogin.isLoading || facebookLogin.isLoading) return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -121,7 +139,7 @@ export const SignInScreen = () => {
                 <FacebookButton
                   text="Continue with Facebook"
                   style={styles.button}
-                  onPress={() => console.log("facebook login")}
+                  onPress={() => facebookLogin.mutate()}
                 />
                 <AppleButton
                   type="sign-in"

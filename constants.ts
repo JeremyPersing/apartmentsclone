@@ -24,4 +24,5 @@ export const endpoints = {
   search: locationEndpoint + "/search",
   register: userEndpoint + "/register",
   login: userEndpoint + "/login",
+  facebook: userEndpoint + "/facebook",
 };

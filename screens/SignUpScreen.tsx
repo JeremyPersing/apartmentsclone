@@ -5,6 +5,7 @@ import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
+import * as Facebook from "expo-auth-session/providers/facebook";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -13,13 +14,17 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
-import { registerUser } from "../services/user";
+import { facebookLoginOrRegister, registerUser } from "../services/user";
 import { useAuth } from "../hooks/useAuth";
 import { Loading } from "../components/Loading";
 
 export const SignUpScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
+
+  const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: "723313165600806",
+  });
 
   const nativeRegister = useMutation(
     async (values: {
@@ -41,7 +46,21 @@ export const SignUpScreen = () => {
     }
   );
 
-  if (nativeRegister.isLoading) return <Loading />;
+  const facebookRegister = useMutation(async () => {
+    const response = await fbPromptAsync();
+    if (response.type === "success") {
+      const { access_token } = response.params;
+
+      const user = await facebookLoginOrRegister(access_token);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  });
+
+  if (nativeRegister.isLoading || facebookRegister.isLoading)
+    return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -170,7 +189,7 @@ export const SignUpScreen = () => {
                 <FacebookButton
                   text="Sign up with Facebook"
                   style={styles.button}
-                  onPress={() => console.log("facebook sign up")}
+                  onPress={() => facebookRegister.mutate()}
                 />
                 <AppleButton
                   type="sign-up"
