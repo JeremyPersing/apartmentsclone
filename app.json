@@ -19,16 +19,30 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jeremypersing.apartmentsclonepreview"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jeremypersing.apartmentsclonepreview"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "facebookScheme": "fb723313165600806",
+    "facebookAppId": "723313165600806",
+    "facebookDisplayName": "ApartmentsClone",
+    "plugins": [
+      "react-native-fbsdk-next",
+      [
+        "expo-facebook",
+        {
+          "userTrackingPermission": false
+        }
+      ]
+    ]
   }
 }

@@ -5,7 +5,8 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "react-query";
-import * as Facebook from "expo-auth-session/providers/facebook";
+// import * as Facebook from "expo-auth-session/providers/facebook";
+import * as Facebook from "expo-facebook";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -22,9 +23,9 @@ export const SignInScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
 
-  const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
-    clientId: "723313165600806",
-  });
+  // const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
+  //   clientId: "723313165600806",
+  // });
 
   const nativeLogin = useMutation(
     async (values: { email: string; password: string }) => {
@@ -37,16 +38,32 @@ export const SignInScreen = () => {
   );
 
   const facebookLogin = useMutation(async () => {
-    const response = await fbPromptAsync();
-    if (response.type === "success") {
-      const { access_token } = response.params;
+    await Facebook.initializeAsync({
+      appId: "723313165600806",
+    });
+    const obj = await Facebook.logInWithReadPermissionsAsync({
+      permissions: ["public_profile"],
+    });
 
-      const user = await facebookLoginOrRegister(access_token);
+    if (obj.type === "success") {
+      console.log(obj.token);
+      const user = await facebookLoginOrRegister(obj.token);
       if (user) {
         login(user);
         navigation.goBack();
       }
     }
+
+    // expo-auth-session/providers/facebook
+    // const response = await fbPromptAsync();
+    // if (response.type === "success") {
+    //   const { access_token } = response.params;
+    //   const user = await facebookLoginOrRegister(access_token);
+    //   if (user) {
+    //     login(user);
+    //     navigation.goBack();
+    //   }
+    // }
   });
 
   if (nativeLogin.isLoading || facebookLogin.isLoading) return <Loading />;
