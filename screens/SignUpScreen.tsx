@@ -6,6 +6,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
 import * as Facebook from "expo-auth-session/providers/facebook";
+import * as Google from "expo-auth-session/providers/google";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -14,7 +15,11 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
-import { facebookLoginOrRegister, registerUser } from "../services/user";
+import {
+  facebookLoginOrRegister,
+  googleLoginOrRegister,
+  registerUser,
+} from "../services/user";
 import { useAuth } from "../hooks/useAuth";
 import { Loading } from "../components/Loading";
 
@@ -22,7 +27,15 @@ export const SignUpScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
 
-  const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
+  const [_, __, googlePromptAsync] = Google.useAuthRequest({
+    expoClientId:
+      "974074584499-unf9vgjb47j4bsccejqi4ekj110c47nf.apps.googleusercontent.com",
+    iosClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+    androidClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+    webClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+  });
+
+  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
     clientId: "723313165600806",
   });
 
@@ -59,7 +72,24 @@ export const SignUpScreen = () => {
     }
   });
 
-  if (nativeRegister.isLoading || facebookRegister.isLoading)
+  const googleRegister = useMutation(async () => {
+    const response = await googlePromptAsync();
+    if (response.type === "success") {
+      const { access_token } = response.params;
+
+      const user = await googleLoginOrRegister(access_token);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  });
+
+  if (
+    nativeRegister.isLoading ||
+    facebookRegister.isLoading ||
+    googleRegister.isLoading
+  )
     return <Loading />;
 
   return (
@@ -184,7 +214,7 @@ export const SignUpScreen = () => {
                 <GoogleButton
                   text="Sign up with Google"
                   style={styles.button}
-                  onPress={() => console.log("google sign up")}
+                  onPress={() => googleRegister.mutate()}
                 />
                 <FacebookButton
                   text="Sign up with Facebook"

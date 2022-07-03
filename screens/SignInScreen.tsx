@@ -6,6 +6,7 @@ import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "react-query";
 import * as Facebook from "expo-auth-session/providers/facebook";
+import * as Google from "expo-auth-session/providers/google";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -14,7 +15,11 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { PasswordInput } from "../components/PasswordInput";
 import { OrDivider } from "../components/OrDivider";
-import { facebookLoginOrRegister, loginUser } from "../services/user";
+import {
+  facebookLoginOrRegister,
+  googleLoginOrRegister,
+  loginUser,
+} from "../services/user";
 import { useAuth } from "../hooks/useAuth";
 import { Loading } from "../components/Loading";
 
@@ -22,7 +27,15 @@ export const SignInScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
 
-  const [__, ___, fbPromptAsync] = Facebook.useAuthRequest({
+  const [_, __, googlePromptAsync] = Google.useAuthRequest({
+    expoClientId:
+      "974074584499-unf9vgjb47j4bsccejqi4ekj110c47nf.apps.googleusercontent.com",
+    iosClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+    androidClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+    webClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+  });
+
+  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
     clientId: "723313165600806",
   });
 
@@ -49,7 +62,21 @@ export const SignInScreen = () => {
     }
   });
 
-  if (nativeLogin.isLoading || facebookLogin.isLoading) return <Loading />;
+  const googleLogin = useMutation(async () => {
+    const response = await googlePromptAsync();
+    if (response.type === "success") {
+      const { access_token } = response.params;
+
+      const user = await googleLoginOrRegister(access_token);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  });
+
+  if (nativeLogin.isLoading || facebookLogin.isLoading || googleLogin.isLoading)
+    return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -134,7 +161,7 @@ export const SignInScreen = () => {
                 <GoogleButton
                   text="Continue with Google"
                   style={styles.button}
-                  onPress={() => console.log("google login")}
+                  onPress={() => googleLogin.mutate()}
                 />
                 <FacebookButton
                   text="Continue with Facebook"

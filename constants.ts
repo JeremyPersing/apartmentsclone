@@ -25,4 +25,5 @@ export const endpoints = {
   register: userEndpoint + "/register",
   login: userEndpoint + "/login",
   facebook: userEndpoint + "/facebook",
+  google: userEndpoint + "/google",
 };
