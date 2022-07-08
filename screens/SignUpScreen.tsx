@@ -7,6 +7,7 @@ import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
 import * as Facebook from "expo-auth-session/providers/facebook";
 import * as Google from "expo-auth-session/providers/google";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -16,6 +17,7 @@ import { AppleButton } from "../components/AppleButton";
 import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
 import {
+  appleLoginOrRegister,
   facebookLoginOrRegister,
   googleLoginOrRegister,
   registerUser,
@@ -85,10 +87,28 @@ export const SignUpScreen = () => {
     }
   });
 
+  const appleRegister = useMutation(async () => {
+    const { identityToken } = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      ],
+    });
+
+    if (identityToken) {
+      const user = await appleLoginOrRegister(identityToken);
+      if (user) {
+        login(user);
+        navigation.goBack();
+      }
+    }
+  });
+
   if (
     nativeRegister.isLoading ||
     facebookRegister.isLoading ||
-    googleRegister.isLoading
+    googleRegister.isLoading ||
+    appleRegister.isLoading
   )
     return <Loading />;
 
@@ -223,7 +243,7 @@ export const SignUpScreen = () => {
                 />
                 <AppleButton
                   type="sign-up"
-                  onPress={() => console.log("apple sign up")}
+                  onPress={() => appleRegister.mutate()}
                 />
               </>
             );
