@@ -26,6 +26,7 @@ import {
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { theme } from "../theme";
+import { PropertyDetailsScreen } from "../screens/PropertyDetailsScreen";
 
 export default function Navigation({
   colorScheme,
@@ -78,6 +79,11 @@ function RootNavigator() {
         <Stack.Screen
           name="ResetPassword"
           component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PropertyDetails"
+          component={PropertyDetailsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Group>

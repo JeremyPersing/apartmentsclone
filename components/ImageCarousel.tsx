@@ -1,10 +1,30 @@
-import { FlatList, Pressable, Image, StyleSheet } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  Image,
+  StyleSheet,
+  ImageStyle,
+  View,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState, useRef } from "react";
+import { Text } from "@ui-kitten/components";
 
 import { WIDTH } from "../constants";
 
-export const ImageCarousel = ({ images }: { images: string[] }) => {
+export const ImageCarousel = ({
+  images,
+  onImagePress,
+  chevronsShown,
+  indexShown,
+  imageStyle,
+}: {
+  images: string[];
+  onImagePress?: () => void;
+  chevronsShown?: boolean;
+  indexShown?: boolean;
+  imageStyle?: ImageStyle;
+}) => {
   const flatListRef = useRef<FlatList | null>(null);
   const viewConfig = { viewAreaCoveragePercentThreshold: 95 };
   const [activeIndex, setActiveIndex] = useState(0);
@@ -50,28 +70,50 @@ export const ImageCarousel = ({ images }: { images: string[] }) => {
         viewabilityConfig={viewConfig}
         onViewableItemsChanged={onViewRef.current}
         renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.image} />
+          <Pressable onPress={onImagePress}>
+            <Image source={{ uri: item }} style={[styles.image, imageStyle]} />
+          </Pressable>
         )}
         keyExtractor={(item) => item}
       />
 
-      <Pressable
-        style={[
-          styles.chevron,
-          {
-            left: 5,
-          },
-        ]}
-        onPress={handlePressLeft}
-      >
-        <MaterialCommunityIcons name="chevron-left" color="white" size={45} />
-      </Pressable>
-      <Pressable
-        style={[styles.chevron, { right: 5 }]}
-        onPress={handlePressRight}
-      >
-        <MaterialCommunityIcons name="chevron-right" color="white" size={45} />
-      </Pressable>
+      {chevronsShown && (
+        <>
+          <Pressable
+            style={[
+              styles.chevron,
+              {
+                left: 5,
+              },
+            ]}
+            onPress={handlePressLeft}
+          >
+            <MaterialCommunityIcons
+              name="chevron-left"
+              color="white"
+              size={45}
+            />
+          </Pressable>
+          <Pressable
+            style={[styles.chevron, { right: 5 }]}
+            onPress={handlePressRight}
+          >
+            <MaterialCommunityIcons
+              name="chevron-right"
+              color="white"
+              size={45}
+            />
+          </Pressable>
+        </>
+      )}
+
+      {indexShown && (
+        <View style={styles.index}>
+          <Text category={"c2"} style={styles.indexText}>
+            {activeIndex + 1} of {images.length} photos
+          </Text>
+        </View>
+      )}
     </>
   );
 };
@@ -87,4 +129,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 95,
   },
+  index: {
+    position: "absolute",
+    top: 20,
+    left: 15,
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // use this to give the black background opacity but not the text
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 30,
+  },
+  indexText: { color: "#fff" },
 });

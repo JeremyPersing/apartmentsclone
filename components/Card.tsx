@@ -1,4 +1,4 @@
-import { View, ViewStyle, StyleSheet } from "react-native";
+import { Pressable, ViewStyle, StyleSheet } from "react-native";
 
 import { Property } from "../types/property";
 import { ImageCarousel } from "./ImageCarousel";
@@ -7,16 +7,22 @@ import { LISTMARGIN } from "../constants";
 
 export const Card = ({
   property,
+  onPress,
   style,
 }: {
   property: Property;
+  onPress?: () => void;
   style?: ViewStyle;
 }) => {
   return (
-    <View style={[styles.container, style]}>
-      <ImageCarousel images={property.images} />
+    <Pressable onPress={onPress} style={[styles.container, style]}>
+      <ImageCarousel
+        onImagePress={onPress}
+        images={property.images}
+        chevronsShown
+      />
       <CardInformation property={property} />
-    </View>
+    </Pressable>
   );
 };
 

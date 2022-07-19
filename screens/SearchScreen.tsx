@@ -2,6 +2,7 @@ import { Animated, View, StyleSheet } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import MapView from "react-native-maps";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Screen } from "../components/Screen";
 import { HEADERHEIGHT } from "../constants";
@@ -18,6 +19,7 @@ export const SearchScreen = ({
 }: {
   route: { params: SearchScreenParams };
 }) => {
+  const navigation = useNavigation();
   const [mapShown, setMapShown] = useState<boolean>(false);
   const [scrollAnimation] = useState(new Animated.Value(0));
   const mapRef = useRef<MapView | null>(null);
@@ -95,7 +97,15 @@ export const SearchScreen = ({
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
-                <Card style={styles.card} property={item} />
+                <Card
+                  style={styles.card}
+                  property={item}
+                  onPress={() =>
+                    navigation.navigate("PropertyDetails", {
+                      propertyID: item.id,
+                    })
+                  }
+                />
               )}
             />
           ) : (
