@@ -7,6 +7,7 @@ import { Screen } from "../components/Screen";
 import { properties } from "../data/properties";
 import { theme } from "../theme";
 import { PricingAndFloorPlanSection } from "../components/propertyDetailsSections/PricingAndFloorPlanSection";
+import { AboutSection } from "../components/propertyDetailsSections/AboutSection";
 
 export const PropertyDetailsScreen = ({
   route,
@@ -34,6 +35,9 @@ export const PropertyDetailsScreen = ({
               <PropertyHeaderSection property={item} />
               <Divider style={styles.divider} />
               <PricingAndFloorPlanSection property={item} />
+              <Divider style={styles.divider} />
+              <AboutSection property={item} />
+              <Divider style={styles.divider} />
             </View>
           </>
         )}
