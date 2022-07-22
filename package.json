@@ -16,6 +16,7 @@
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-community/datetimepicker": "^6.2.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",

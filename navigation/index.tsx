@@ -19,6 +19,7 @@ import { SignInScreen } from "../screens/SignInScreen";
 import { SignUpScreen } from "../screens/SignUpScreen";
 import { ForgotPasswordScreen } from "../screens/ForgotPasswordScreen";
 import { ResetPasswordScreen } from "../screens/ResetPasswordScreen";
+import { MessageScreen } from "../screens/MessageScreen";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -84,6 +85,11 @@ function RootNavigator() {
         <Stack.Screen
           name="PropertyDetails"
           component={PropertyDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Message"
+          component={MessageScreen}
           options={{ headerShown: false }}
         />
       </Stack.Group>

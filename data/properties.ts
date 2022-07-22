@@ -602,6 +602,8 @@ export const properties: Property[] = [
         unit: "0308",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 7,
@@ -691,6 +693,8 @@ export const properties: Property[] = [
         unit: "0308",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 8,
@@ -780,6 +784,8 @@ export const properties: Property[] = [
         unit: "0308",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 9,
@@ -802,6 +808,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 25.7509158,
     lng: -80.2553905,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 10,
@@ -824,6 +832,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 25.5696222,
     lng: -80.3821797,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 11,
@@ -846,6 +856,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 40.73061,
     lng: -73.935242,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 12,
@@ -868,6 +880,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 40.74061,
     lng: -73.925242,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 13,
@@ -890,6 +904,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 40.63061,
     lng: -73.935242,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 14,
@@ -912,6 +928,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 40.73061,
     lng: -73.835242,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 15,
@@ -934,6 +952,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 40.67061,
     lng: -73.915242,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 16,
@@ -956,6 +976,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 41.881832,
     lng: -87.623177,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 17,
@@ -978,6 +1000,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 41.861832,
     lng: -87.643177,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 18,
@@ -1000,6 +1024,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 41.861832,
     lng: -87.693177,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 19,
@@ -1022,6 +1048,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 41.81832,
     lng: -87.623177,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 20,
@@ -1044,6 +1072,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 39.742043,
     lng: -104.991531,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 21,
@@ -1066,6 +1096,8 @@ export const properties: Property[] = [
     tags: ["Parking"],
     lat: 39.772043,
     lng: -104.991531,
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 22,
@@ -1155,6 +1187,8 @@ export const properties: Property[] = [
         unit: "0308",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 23,
@@ -1244,6 +1278,8 @@ export const properties: Property[] = [
         unit: "0308",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 24,
@@ -1281,6 +1317,8 @@ export const properties: Property[] = [
         unit: "0204",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
   {
     id: 25,
@@ -1344,6 +1382,8 @@ export const properties: Property[] = [
         unit: "0101",
       },
     ],
+    phoneNumber: "12334556757",
+    website: "www.jeremypersing.com",
   },
 ];
 

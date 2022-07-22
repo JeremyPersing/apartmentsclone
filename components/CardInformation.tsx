@@ -1,12 +1,15 @@
 import { View, StyleSheet } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 import { theme } from "../theme";
 import { Property } from "../types/property";
 import { Row } from "./Row";
+import { callPhoneNumber } from "../utils/callPhoneNumber";
 
 export const CardInformation = ({ property }: { property: Property }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.informationContainer}>
       <Row style={styles.rowJustification}>
@@ -48,14 +51,16 @@ export const CardInformation = ({ property }: { property: Property }) => {
             styles.button,
           ]}
           size="small"
-          onPress={() => console.log("email the item manager")}
+          onPress={() =>
+            navigation.navigate("Message", { propertyID: property.id })
+          }
         >
           Email
         </Button>
         <Button
           style={styles.button}
           size="small"
-          onPress={() => console.log("call the item manager")}
+          onPress={() => callPhoneNumber(property.phoneNumber)}
         >
           Call
         </Button>
