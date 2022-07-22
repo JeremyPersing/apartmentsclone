@@ -6,7 +6,7 @@ export type Property = {
   images: string[];
   rentLow: number;
   rentHigh: number;
-  bedrooomLow: number;
+  bedroomLow: number;
   bedroomHigh: number;
   name: string;
   street: string;

@@ -8,6 +8,7 @@ import { properties } from "../data/properties";
 import { theme } from "../theme";
 import { PricingAndFloorPlanSection } from "../components/propertyDetailsSections/PricingAndFloorPlanSection";
 import { AboutSection } from "../components/propertyDetailsSections/AboutSection";
+import { ContactSection } from "../components/propertyDetailsSections/ContactSection";
 
 export const PropertyDetailsScreen = ({
   route,
@@ -37,6 +38,8 @@ export const PropertyDetailsScreen = ({
               <PricingAndFloorPlanSection property={item} />
               <Divider style={styles.divider} />
               <AboutSection property={item} />
+              <Divider style={styles.divider} />
+              <ContactSection property={item} />
               <Divider style={styles.divider} />
             </View>
           </>
