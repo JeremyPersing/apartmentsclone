@@ -10,6 +10,7 @@ import { PricingAndFloorPlanSection } from "../components/propertyDetailsSection
 import { AboutSection } from "../components/propertyDetailsSections/AboutSection";
 import { ContactSection } from "../components/propertyDetailsSections/ContactSection";
 import { AmentitiesSection } from "../components/propertyDetailsSections/AmenitiesSection";
+import { LeaseAndFeesSection } from "../components/propertyDetailsSections/LeaseAndFeesSection";
 
 export const PropertyDetailsScreen = ({
   route,
@@ -44,6 +45,7 @@ export const PropertyDetailsScreen = ({
               <Divider style={styles.divider} />
               <AmentitiesSection property={item} />
               <Divider style={styles.divider} />
+              <LeaseAndFeesSection property={item} />
             </View>
           </>
         )}
