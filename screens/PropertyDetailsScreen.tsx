@@ -11,6 +11,7 @@ import { AboutSection } from "../components/propertyDetailsSections/AboutSection
 import { ContactSection } from "../components/propertyDetailsSections/ContactSection";
 import { AmentitiesSection } from "../components/propertyDetailsSections/AmenitiesSection";
 import { LeaseAndFeesSection } from "../components/propertyDetailsSections/LeaseAndFeesSection";
+import { LocationSection } from "../components/propertyDetailsSections/LocationSection";
 
 export const PropertyDetailsScreen = ({
   route,
@@ -46,6 +47,8 @@ export const PropertyDetailsScreen = ({
               <AmentitiesSection property={item} />
               <Divider style={styles.divider} />
               <LeaseAndFeesSection property={item} />
+              <Divider style={styles.divider} />
+              <LocationSection property={item} />
             </View>
           </>
         )}

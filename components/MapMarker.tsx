@@ -9,7 +9,7 @@ export const MapMarker = ({
 }: {
   lat: number;
   lng: number;
-  onPress: () => void;
+  onPress?: () => void;
   color: string;
 }) => {
   return (
