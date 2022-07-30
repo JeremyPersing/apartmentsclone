@@ -1,20 +1,51 @@
 import { StyleSheet } from "react-native";
-import { Input, Button, Text } from "@ui-kitten/components";
+import { Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { useMutation } from "react-query";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-import { GoogleButton } from "../components/GoogleButton";
-import { FacebookButton } from "../components/FacebookButton";
-import { AppleButton } from "../components/AppleButton";
-import { OrDivider } from "../components/OrDivider";
 import { PasswordInput } from "../components/PasswordInput";
+import { Loading } from "../components/Loading";
+import { endpoints } from "../constants";
 
-export const ResetPasswordScreen = () => {
+export const ResetPasswordScreen = ({
+  route,
+}: {
+  route: { params: { token: string } };
+}) => {
   const navigation = useNavigation();
+
+  const resetPassword = useMutation(
+    async (password: string) => {
+      return axios.post(
+        endpoints.resetPassword,
+        { password },
+        {
+          headers: {
+            Authorization: `Bearer ${route.params.token}`,
+          },
+        }
+      );
+    },
+    {
+      onSuccess() {
+        navigation.navigate("SignIn");
+      },
+      onError(error: any) {
+        if (error.response.status === 401)
+          return alert("Invalid or Expired Token");
+
+        alert("Unable to reset password.");
+      },
+    }
+  );
+
+  if (resetPassword.isLoading) return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -42,8 +73,7 @@ export const ResetPasswordScreen = () => {
               .required("Required"),
           })}
           onSubmit={(values) => {
-            console.log("send values to server", values);
-            navigation.navigate("SignIn");
+            resetPassword.mutate(values.password);
           }}
         >
           {({

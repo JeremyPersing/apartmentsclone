@@ -48,6 +48,7 @@ export const PasswordInput = ({
       placeholder={placeholder}
       autoComplete="password"
       autoCapitalize="none"
+      autoCorrect={false}
       label={label}
       secureTextEntry={passwordHidden}
       textContentType="password"

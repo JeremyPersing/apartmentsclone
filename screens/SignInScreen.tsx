@@ -142,6 +142,7 @@ export const SignInScreen = () => {
                   textContentType="emailAddress"
                   autoComplete="email"
                   label="Email"
+                  autoCorrect={false}
                   onBlur={() => setFieldTouched("email")}
                   caption={
                     touched.email && errors.email ? errors.email : undefined

@@ -3,15 +3,35 @@ import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { useMutation } from "react-query";
+import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
+import { Loading } from "../components/Loading";
+import { endpoints } from "../constants";
 
 export const ForgotPasswordScreen = () => {
-  const navigation = useNavigation();
   const [emailSent, setEmailSent] = useState(false);
+
+  const forgotPassword = useMutation(
+    async (email: string) => {
+      return axios.post(endpoints.forgotPassword, {
+        email,
+      });
+    },
+    {
+      onSuccess(data) {
+        if (data.data.emailSent) setEmailSent(true);
+      },
+      onError(error: any) {
+        alert(error?.response.data.detail);
+      },
+    }
+  );
+
+  if (forgotPassword.isLoading) return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -45,8 +65,7 @@ export const ForgotPasswordScreen = () => {
                 email: yup.string().email().required("Your email is required."),
               })}
               onSubmit={(values) => {
-                console.log("submit to the server", values);
-                setEmailSent(true);
+                forgotPassword.mutate(values.email);
               }}
             >
               {({

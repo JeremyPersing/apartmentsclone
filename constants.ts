@@ -27,4 +27,6 @@ export const endpoints = {
   facebook: userEndpoint + "/facebook",
   google: userEndpoint + "/google",
   apple: userEndpoint + "/apple",
+  forgotPassword: userEndpoint + "/forgotpassword",
+  resetPassword: userEndpoint + "/resetpassword",
 };

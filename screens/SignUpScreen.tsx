@@ -198,6 +198,7 @@ export const SignUpScreen = () => {
                   keyboardType="email-address"
                   textContentType="emailAddress"
                   autoComplete="email"
+                  autoCorrect={false}
                   label="Email"
                   onBlur={() => setFieldTouched("email")}
                   caption={
