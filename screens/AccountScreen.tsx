@@ -15,7 +15,7 @@ export const AccountScreen = () => {
   const firstSignedOutButtons = [
     {
       label: "Add a Property",
-      onPress: () => console.log("navigate to AddProperty"),
+      onPress: () => navigation.navigate("AddProperty"),
     },
     {
       label: "View My Properties",
@@ -71,7 +71,7 @@ export const AccountScreen = () => {
   const rentalManagementButtons = [
     {
       label: "Add a Property",
-      onPress: () => console.log("navigate to AddProperty"),
+      onPress: () => navigation.navigate("AddProperty"),
     },
     {
       label: "Add Apartment to Property",
@@ -152,14 +152,6 @@ export const AccountScreen = () => {
           </>
         )}
       </ScrollView>
-
-      <Button
-        onPress={() =>
-          navigation.navigate("ResetPassword", { token: "agnoiueaegrioaeoirn" })
-        }
-      >
-        Reset Password
-      </Button>
     </Screen>
   );
 };

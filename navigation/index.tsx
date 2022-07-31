@@ -28,6 +28,7 @@ import {
 import LinkingConfiguration from "./LinkingConfiguration";
 import { theme } from "../theme";
 import { PropertyDetailsScreen } from "../screens/PropertyDetailsScreen";
+import { AddPropertyScreen } from "../screens/AddPropertyScreen";
 
 export default function Navigation({
   colorScheme,
@@ -90,6 +91,11 @@ function RootNavigator() {
         <Stack.Screen
           name="Message"
           component={MessageScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddProperty"
+          component={AddPropertyScreen}
           options={{ headerShown: false }}
         />
       </Stack.Group>
