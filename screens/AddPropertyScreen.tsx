@@ -1,12 +1,16 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Text } from "@ui-kitten/components";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { useAuth } from "../hooks/useAuth";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
 import { CreateManagerScreen } from "./CreateManagerScreen";
+import { endpoints } from "../constants";
+import { Loading } from "../components/Loading";
 
 export const AddPropertyScreen = ({
   route,
@@ -14,11 +18,22 @@ export const AddPropertyScreen = ({
   route: { params: { propertyID: number } };
 }) => {
   const { user } = useAuth();
-  const manager = false;
+  const managerQuery = useQuery(
+    "manager",
+    () => {
+      if (user) return axios.get(endpoints.getManagersByUserID + user.ID);
+    },
+    {
+      cacheTime: 24 * 60 * 60 * 1000,
+    }
+  );
 
   if (!user) return <SignUpOrSignInScreen />;
 
-  if (!manager) return <CreateManagerScreen />;
+  if (managerQuery.isLoading) return <Loading />;
+
+  if (managerQuery.data?.data.managers.length === 0 || !managerQuery.data)
+    return <CreateManagerScreen refetchManagers={managerQuery.refetch} />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>

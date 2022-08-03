@@ -6,14 +6,24 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import * as ImagePicker from "expo-image-picker";
 import RNPhoneInput from "react-native-phone-number-input";
+import { useMutation } from "react-query";
+import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { PhoneInput } from "../components/PhoneInput";
+import { endpoints } from "../constants";
+import { useAuth } from "../hooks/useAuth";
+import { Loading } from "../components/Loading";
 
-export const CreateManagerScreen = () => {
+export const CreateManagerScreen = ({
+  refetchManagers,
+}: {
+  refetchManagers?: () => void;
+}) => {
   const [imageURI, setImageURI] = useState("");
   const phoneRef = useRef<RNPhoneInput>(null);
+  const { user } = useAuth();
 
   const pickImage = async (
     setBase64Image: (field: string, value: any) => void,
@@ -31,11 +41,34 @@ export const CreateManagerScreen = () => {
     }
   };
 
-  const createManager = () => {
-    console.log(
-      "create a manager on the backend and go on to adding a property"
-    );
-  };
+  const createManager = useMutation(
+    (values: {
+      name: string;
+      email: string;
+      phoneNumber: string;
+      website: string;
+      image: string;
+    }) => {
+      return axios.post(endpoints.createManager, {
+        userID: user?.ID,
+        name: values.name,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        website: values.website,
+        image: values.image,
+      });
+    },
+    {
+      onSuccess(data) {
+        if (refetchManagers) refetchManagers();
+      },
+      onError() {
+        alert("Unable to create manager");
+      },
+    }
+  );
+
+  if (createManager.isLoading) return <Loading />;
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -72,7 +105,7 @@ export const CreateManagerScreen = () => {
               )
                 return;
 
-              createManager();
+              createManager.mutate(values);
             }}
           >
             {({
