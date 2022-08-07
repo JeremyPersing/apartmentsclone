@@ -16,7 +16,8 @@
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
     "@expo/vector-icons": "^13.0.0",
-    "@react-native-community/datetimepicker": "^6.2.0",
+    "@react-native-community/datetimepicker": "6.1.2",
+    "@react-native-picker/picker": "2.4.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
@@ -49,6 +50,7 @@
     "react-native-screens": "~3.11.1",
     "react-native-svg": "^12.3.0",
     "react-native-web": "0.17.7",
+    "react-native-woodpicker": "^0.3.17",
     "react-query": "^3.39.1",
     "yup": "^0.32.11"
   },

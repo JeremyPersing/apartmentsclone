@@ -3,6 +3,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Text } from "@ui-kitten/components";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -11,6 +13,7 @@ import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
 import { CreateManagerScreen } from "./CreateManagerScreen";
 import { endpoints } from "../constants";
 import { Loading } from "../components/Loading";
+import { AddPropertySection } from "../components/AddPropertySection";
 
 export const AddPropertyScreen = ({
   route,
@@ -28,28 +31,18 @@ export const AddPropertyScreen = ({
     }
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!managerQuery.data) managerQuery.refetch();
+    }, [])
+  );
+
   if (!user) return <SignUpOrSignInScreen />;
 
-  if (managerQuery.isLoading) return <Loading />;
+  if (managerQuery.isLoading || managerQuery.isFetching) return <Loading />;
 
   if (managerQuery.data?.data.managers.length === 0 || !managerQuery.data)
     return <CreateManagerScreen refetchManagers={managerQuery.refetch} />;
 
-  return (
-    <KeyboardAwareScrollView bounces={false}>
-      <Screen>
-        <ModalHeader text="JPApartments" xShown />
-        <View style={styles.container}>
-          <Text category={"h5"} style={styles.header}>
-            Add a Property
-          </Text>
-        </View>
-      </Screen>
-    </KeyboardAwareScrollView>
-  );
+  return <AddPropertySection />;
 };
-
-const styles = StyleSheet.create({
-  container: { marginHorizontal: 10 },
-  header: { marginVertical: 20 },
-});

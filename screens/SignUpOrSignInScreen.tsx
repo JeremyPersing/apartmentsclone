@@ -36,7 +36,7 @@ export const SignUpOrSignInScreen = () => {
 
 const styles = StyleSheet.create({
   container: { marginHorizontal: 10 },
-  header: { marginVertical: 20 },
+  header: { marginVertical: 20, textAlign: "center" },
   lottie: {
     marginBottom: 50,
     height: 250,

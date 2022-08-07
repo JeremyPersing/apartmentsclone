@@ -1,28 +1,18 @@
-import {
-  Platform,
-  StyleSheet,
-  View,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { Platform, StyleSheet, View, ScrollView } from "react-native";
 import { useState } from "react";
-import { Input, Button, Text } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import { useQueryClient } from "react-query";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { theme } from "../theme";
-import { Row } from "../components/Row";
-import { getSuggestedLocations } from "../services/location";
 import { Location } from "../types/locationIQ";
 import { CurrentLocationButton } from "../components/CurrentLocationButton";
 import { getFormattedLocationText } from "../utils/getFormattedLocationText";
 import { RecentSearchList } from "../components/RecentSearchList";
+import { SearchAddress } from "../components/SearchAddress";
 
 export const FindLocationsScreen = () => {
-  const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<Location[]>([]);
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -50,27 +40,12 @@ export const FindLocationsScreen = () => {
     });
   };
 
-  const handleChange = async (val: string) => {
-    setValue(val);
-    if (val.length > 2) {
-      const locations = await getSuggestedLocations(val);
-      if (locations.length > 0) setSuggestions(locations);
-    } else if (val.length === 0) setSuggestions([]);
-  };
-
-  const handleSubmitEditing = async () => {
-    const locations = await getSuggestedLocations(value);
-    if (locations.length > 0) {
-      handleNavigate(locations[0]);
-    }
-  };
-
   const handleNavigate = (location: Location) => {
     setRecentSearch(location);
     navigation.navigate("Root", {
       screen: "Search",
       params: {
-        location: getFormattedLocationText(location),
+        location: getFormattedLocationText(location, "autocomplete"),
         lat: location.lat,
         lon: location.lon,
         boundingBox: location.boundingbox,
@@ -78,72 +53,18 @@ export const FindLocationsScreen = () => {
     });
   };
 
-  const getInput = () => {
-    if (Platform.OS === "ios")
-      return (
-        <Input
-          keyboardType="default"
-          autoFocus
-          selectionColor={theme["color-primary-500"]}
-          placeholder="Enter Location"
-          size={"large"}
-          value={value}
-          onChangeText={handleChange}
-          onSubmitEditing={handleSubmitEditing}
-          style={styles.defaultMarginTop}
-        />
-      );
-
-    return (
-      <Row>
-        <Input
-          keyboardType="default"
-          autoFocus
-          selectionColor={theme["color-primary-500"]}
-          placeholder="Enter Location"
-          size={"large"}
-          value={value}
-          onChangeText={handleChange}
-          onSubmitEditing={handleSubmitEditing}
-          style={[styles.defaultMarginTop, { width: "80%" }]}
-        />
-        <Button appearance={"ghost"} status="info" onPress={navigation.goBack}>
-          Cancel
-        </Button>
-      </Row>
-    );
-  };
-
-  const SuggestedText = ({ locationItem }: { locationItem: Location }) => {
-    const location = getFormattedLocationText(locationItem);
-    return (
-      <Row style={styles.suggestionContainer}>
-        <Text>{location}</Text>
-      </Row>
-    );
-  };
-
   return (
     <Screen>
       {Platform.OS === "ios" ? <ModalHeader /> : null}
       <View style={styles.screenContent}>
-        {getInput()}
-        {suggestions.length > 0 ? (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={suggestions}
-            keyExtractor={(item, index) => item.place_id + index}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  handleNavigate(item);
-                }}
-              >
-                <SuggestedText locationItem={item} />
-              </TouchableOpacity>
-            )}
-          />
-        ) : (
+        <SearchAddress
+          type="autocomplete"
+          handleGoBack={navigation.goBack}
+          suggestions={suggestions}
+          setSuggestions={(item) => setSuggestions(item as Location[])}
+          handleSuggestionPress={(item) => handleNavigate(item as Location)}
+        />
+        {suggestions.length === 0 ? (
           <ScrollView bounces={false}>
             <CurrentLocationButton style={styles.currentLocationButton} />
             <RecentSearchList
@@ -151,7 +72,7 @@ export const FindLocationsScreen = () => {
               recentSearches={recentSearches}
             />
           </ScrollView>
-        )}
+        ) : null}
       </View>
     </Screen>
   );

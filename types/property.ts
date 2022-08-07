@@ -4,7 +4,7 @@ import { Pet } from "./pet";
 import { Score } from "./score";
 
 export type Property = {
-  id: number;
+  ID: number;
   images: string[];
   rentLow: number;
   rentHigh: number;
