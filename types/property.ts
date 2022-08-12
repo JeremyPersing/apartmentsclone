@@ -28,3 +28,16 @@ export type Property = {
   apartments?: Apartment[];
   scores?: Score[];
 };
+
+export type CreateProperty = {
+  unitType: string;
+  propertyType: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: number;
+  lat: number;
+  lng: number;
+  managerID: number;
+  apartments: { unit?: string; bedrooms: number; bathrooms: number }[];
+};

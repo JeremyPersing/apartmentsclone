@@ -17,9 +17,11 @@ const serverUrl = "http://192.168.30.24:4000/api";
 const location = "/location";
 const user = "/user";
 const manager = "/manager";
+const property = "/property";
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
 const managerEndpoint = serverUrl + manager;
+const propertyEndpoint = serverUrl + property;
 
 export const endpoints = {
   autoComplete: locationEndpoint + "/autocomplete",
@@ -32,5 +34,7 @@ export const endpoints = {
   forgotPassword: userEndpoint + "/forgotpassword",
   resetPassword: userEndpoint + "/resetpassword",
   createManager: managerEndpoint + "/create",
-  getManagersByUserID: managerEndpoint + "/userid/",
+  getManagerByUserID: managerEndpoint + "/userid/",
+  createProperty: propertyEndpoint + "/create",
+  getPropertyByID: propertyEndpoint + "/",
 };

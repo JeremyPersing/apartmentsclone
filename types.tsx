@@ -26,6 +26,7 @@ export type RootStackParamList = {
   PropertyDetails: { propertyID: number };
   Message: { propertyID: number; tour?: boolean };
   AddProperty: { propertyID: number } | undefined;
+  EditProperty: { propertyID: number };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

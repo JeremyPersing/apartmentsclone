@@ -6,6 +6,9 @@ import { useState } from "react";
 import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
+import { useQueryClient, useMutation } from "react-query";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 import { Screen } from "./Screen";
 import { ModalHeader } from "./ModalHeader";
@@ -16,10 +19,83 @@ import { SearchAddress } from "./SearchAddress";
 import { getStateAbbreviation } from "../utils/getStateAbbreviation";
 import { Select } from "./Select";
 import { theme } from "../theme";
+import { Manager } from "../types/manager";
+import { CreateProperty, Property } from "../types/property";
+import { endpoints } from "../constants";
 
 export const AddPropertySection = () => {
+  const navigation = useNavigation();
+  const queryClient = useQueryClient();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
+  const manager: { data: Manager } | undefined =
+    queryClient.getQueryData("manager");
+
+  const createProperty = useMutation(
+    "property",
+    async (obj: CreateProperty) =>
+      axios.post<Property>(endpoints.createProperty, obj),
+    {
+      onError() {
+        alert("Unable to create property");
+      },
+      onSuccess(data) {
+        navigation.navigate("EditProperty", { propertyID: data.data.ID });
+      },
+    }
+  );
+
+  const onSubmit = (values: {
+    unitType: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    lat: string;
+    lng: string;
+    propertyType: PickerItem;
+    unit: {
+      bedrooms: PickerItem;
+      bathrooms: PickerItem;
+    };
+    units: {
+      unit: string;
+      bedrooms: PickerItem;
+      bathrooms: PickerItem;
+    }[];
+  }) => {
+    if (manager) {
+      const obj: CreateProperty = {
+        unitType: values.unitType,
+        propertyType: values.propertyType.value,
+        street: values.street,
+        city: values.city,
+        state: values.state,
+        zip: Number(values.zip),
+        lat: Number(values.lat),
+        lng: Number(values.lng),
+        managerID: manager.data.ID,
+        apartments: [],
+      };
+
+      if (values.unitType === "multiple") {
+        for (let i of values.units) {
+          obj.apartments.push({
+            unit: i.unit,
+            bathrooms: i.bathrooms.value,
+            bedrooms: i.bedrooms.value,
+          });
+        }
+      } else {
+        obj.apartments.push({
+          bathrooms: values.unit.bathrooms.value,
+          bedrooms: values.unit.bedrooms.value,
+        });
+      }
+
+      createProperty.mutate(obj);
+    }
+  };
 
   const handleGoBack = () => {
     setSearchingLocation(false);
@@ -42,7 +118,7 @@ export const AddPropertySection = () => {
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => console.log(values)}
+                onSubmit={(values) => onSubmit(values)}
               >
                 {({
                   values,
