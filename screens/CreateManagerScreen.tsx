@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, Pressable } from "react-native";
+/*import { View, StyleSheet, Image, Pressable } from "react-native";
 import { useState, useRef } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Text, Input, Button } from "@ui-kitten/components";
@@ -236,3 +236,4 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+*/
