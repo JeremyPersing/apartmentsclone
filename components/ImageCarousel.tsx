@@ -60,22 +60,34 @@ export const ImageCarousel = ({
 
   return (
     <>
-      <FlatList
-        ref={(ref) => (flatListRef.current = ref)}
-        data={images}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToAlignment="center"
-        pagingEnabled
-        viewabilityConfig={viewConfig}
-        onViewableItemsChanged={onViewRef.current}
-        renderItem={({ item }) => (
-          <Pressable onPress={onImagePress}>
-            <Image source={{ uri: item }} style={[styles.image, imageStyle]} />
-          </Pressable>
-        )}
-        keyExtractor={(item) => item}
-      />
+      {images && images.length > 0 ? (
+        <FlatList
+          ref={(ref) => (flatListRef.current = ref)}
+          data={images}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToAlignment="center"
+          pagingEnabled
+          viewabilityConfig={viewConfig}
+          onViewableItemsChanged={onViewRef.current}
+          renderItem={({ item }) => (
+            <Pressable onPress={onImagePress}>
+              <Image
+                source={{ uri: item }}
+                style={[styles.image, imageStyle]}
+              />
+            </Pressable>
+          )}
+          keyExtractor={(item) => item}
+        />
+      ) : (
+        <Pressable onPress={onImagePress}>
+          <Image
+            source={require("../assets/images/NoImage.jpeg")}
+            style={[styles.image, imageStyle]}
+          />
+        </Pressable>
+      )}
 
       {chevronsShown && (
         <>

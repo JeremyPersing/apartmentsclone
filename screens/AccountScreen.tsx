@@ -19,7 +19,7 @@ export const AccountScreen = () => {
     },
     {
       label: "View My Properties",
-      onPress: () => console.log("navigate to view my properties"),
+      onPress: () => navigation.navigate("MyProperties"),
     },
   ];
 
@@ -45,7 +45,7 @@ export const AccountScreen = () => {
     },
     {
       label: "My Residences",
-      onPress: () => console.log("navigate to My Residences"),
+      onPress: () => navigation.navigate("MyProperties"),
     },
     {
       label: "Rent Payments",
@@ -79,7 +79,7 @@ export const AccountScreen = () => {
     },
     {
       label: "View My Properties",
-      onPress: () => console.log("navigate to MyProperties"),
+      onPress: () => navigation.navigate("MyProperties"),
     },
   ];
 

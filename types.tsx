@@ -25,8 +25,9 @@ export type RootStackParamList = {
   ResetPassword: { token: string };
   PropertyDetails: { propertyID: number };
   Message: { propertyID: number; tour?: boolean };
-  AddProperty: { propertyID: number } | undefined;
+  AddProperty: undefined;
   EditProperty: { propertyID: number };
+  MyProperties: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

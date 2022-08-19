@@ -30,6 +30,7 @@ import { theme } from "../theme";
 import { PropertyDetailsScreen } from "../screens/PropertyDetailsScreen";
 import { AddPropertyScreen } from "../screens/AddPropertyScreen";
 import { EditPropertyScreen } from "../screens/EditPropertyScreen";
+import { MyPropertiesScreen } from "../screens/MyPropertiesScreen";
 
 export default function Navigation({
   colorScheme,
@@ -102,6 +103,11 @@ function RootNavigator() {
         <Stack.Screen
           name="EditProperty"
           component={EditPropertyScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyProperties"
+          component={MyPropertiesScreen}
           options={{ headerShown: false }}
         />
       </Stack.Group>

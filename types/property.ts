@@ -23,6 +23,7 @@ export type Property = {
   website: string;
   pets: Pet[];
   stars: number;
+  onMarket?: boolean;
   reviews?: Review[];
   features?: string[];
   apartments?: Apartment[];
