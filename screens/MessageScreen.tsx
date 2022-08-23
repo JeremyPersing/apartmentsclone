@@ -13,6 +13,7 @@ import { Row } from "../components/Row";
 import { getStateAbbreviation } from "../utils/getStateAbbreviation";
 import { useAuth } from "../hooks/useAuth";
 import { properties } from "../data/properties";
+import { PressableInput } from "../components/PressableInput";
 
 export const MessageScreen = ({
   route,
@@ -21,10 +22,8 @@ export const MessageScreen = ({
 }) => {
   const navigation = useNavigation();
   const { tour, propertyID } = route.params;
-  const index = properties.findIndex((i) => i.id === propertyID);
+  const index = properties.findIndex((i) => i.ID === propertyID);
   const property = properties[index];
-  const [pickedDate, setPickedDate] = useState<Date>(new Date());
-  const [showCalendar, setShowCalendar] = useState(false);
   const { user } = useAuth();
 
   return (
@@ -54,6 +53,8 @@ export const MessageScreen = ({
             phoneNumber: "",
             email: user ? user.email : "",
             message: tour ? "I would like to schedule a tour." : "",
+            date: new Date(),
+            showCalendar: false,
           }}
           validationSchema={yup.object().shape({
             firstName: yup.string().required("Required"),
@@ -61,6 +62,8 @@ export const MessageScreen = ({
             phoneNumber: yup.string(),
             email: yup.string().email().required("Required"),
             message: yup.string().required("Required"),
+            date: yup.date().required("Required"),
+            showCalendar: yup.bool(),
           })}
           onSubmit={(values) => {
             console.log("send values", values);
@@ -135,32 +138,21 @@ export const MessageScreen = ({
                   status={touched.email && errors.email ? "danger" : "basic"}
                 />
 
-                <View style={styles.input}>
-                  <Text
-                    style={styles.moveInLabel}
-                    category={"label"}
-                    appearance={"hint"}
-                  >
-                    Move-In Date
-                  </Text>
-                  <Pressable
-                    onPress={() => setShowCalendar(true)}
-                    style={styles.pickedDate}
-                  >
-                    <Text style={styles.pickedDateText}>
-                      {pickedDate?.toDateString()}
-                    </Text>
-                  </Pressable>
-                </View>
+                <PressableInput
+                  style={styles.input}
+                  label="Move-In Date"
+                  value={values.date.toDateString()}
+                  onPress={() => setFieldValue("showCalendar", true)}
+                />
 
-                {showCalendar && (
+                {values.showCalendar && (
                   <DateTimePicker
-                    value={pickedDate}
+                    value={values.date}
                     mode="date"
                     onChange={(event: any, selectedDate?: Date) => {
                       if (selectedDate) {
-                        setShowCalendar(false);
-                        setPickedDate(selectedDate);
+                        setFieldValue("showCalendar", false);
+                        setFieldValue("date", selectedDate);
                       }
                     }}
                   />
@@ -208,15 +200,5 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 10,
   },
-  moveInLabel: { paddingVertical: 5 },
-  pickedDate: {
-    borderColor: "#e8e8e8",
-    borderRadius: 3,
-    borderWidth: 1,
-    height: 40,
-    paddingLeft: 15,
-    backgroundColor: "#f7f9fc",
-  },
-  pickedDateText: { marginTop: 7 },
   sendMessageButton: { marginTop: 20 },
 });

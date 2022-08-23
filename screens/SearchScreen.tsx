@@ -94,7 +94,7 @@ export const SearchScreen = ({
               bounces={false}
               scrollEventThrottle={16}
               data={properties}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item.ID.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <Card
@@ -102,7 +102,7 @@ export const SearchScreen = ({
                   property={item}
                   onPress={() =>
                     navigation.navigate("PropertyDetails", {
-                      propertyID: item.id,
+                      propertyID: item.ID,
                     })
                   }
                 />

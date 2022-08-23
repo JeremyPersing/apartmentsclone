@@ -54,11 +54,11 @@ export const SavedScreen = () => {
             property={item}
             style={styles.card}
             onPress={() =>
-              navigation.navigate("PropertyDetails", { propertyID: item.id })
+              navigation.navigate("PropertyDetails", { propertyID: item.ID })
             }
           />
         )}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.ID.toString()}
       />
     );
   };
@@ -130,7 +130,7 @@ export const SavedScreen = () => {
   };
 
   return (
-    <Screen style={styles.screen}>
+    <Screen>
       <Row style={styles.buttonContainer}>
         <Button
           style={[styles.button, styles.favoritesButton]}
@@ -163,9 +163,6 @@ export const SavedScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    marginHorizontal: 10,
-  },
   buttonContainer: {
     alignItems: "center",
     borderRadius: 5,
@@ -200,5 +197,5 @@ const styles = StyleSheet.create({
   signInAndSignUpButtonContainer: {
     marginTop: 15,
   },
-  card: { marginHorizontal: 0, marginVertical: 5 },
+  card: { marginVertical: 10 },
 });

@@ -4,10 +4,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Modal,
+  Dimensions,
 } from "react-native";
 import { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Button, Modal } from "@ui-kitten/components";
+import { Button } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
@@ -78,7 +80,10 @@ export const Card = ({
   };
 
   return (
-    <Pressable onPress={onPress} style={[styles.container, style]}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.container, styles.boxShadow, style]}
+    >
       <ImageCarousel
         onImagePress={onPress}
         images={property.images}
@@ -96,12 +101,8 @@ export const Card = ({
         </TouchableOpacity>
       ) : null}
 
-      <Modal
-        visible={showModal}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={closeModal}
-      >
-        <View style={styles.modal}>
+      <Modal visible={showModal} transparent>
+        <View style={[styles.modal, styles.boxShadow]}>
           <Button
             status={"info"}
             appearance="ghost"
@@ -116,6 +117,9 @@ export const Card = ({
             onPress={handleDeleteProperty}
           >
             Delete Property
+          </Button>
+          <Button appearance="ghost" onPress={closeModal}>
+            Cancel
           </Button>
         </View>
       </Modal>
@@ -144,5 +148,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 5,
     padding: 20,
+    position: "absolute",
+    top: Dimensions.get("screen").height / 3,
+    right: Dimensions.get("screen").width / 4,
+  },
+  boxShadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
 });

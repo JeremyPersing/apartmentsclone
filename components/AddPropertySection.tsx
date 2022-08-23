@@ -22,6 +22,8 @@ import { theme } from "../theme";
 import { CreateProperty, Property } from "../types/property";
 import { endpoints } from "../constants";
 import { useAuth } from "../hooks/useAuth";
+import { bedValues } from "../constants/bedValues";
+import { bathValues } from "../constants/bathValues";
 
 export const AddPropertySection = () => {
   const { user } = useAuth();
@@ -434,32 +436,6 @@ const propertyTypes: PickerItem[] = [
     label: "Mobile Home / Manufactured Home",
     value: "Mobile Home / Manufactured Home",
   },
-];
-
-const bedValues: PickerItem[] = [
-  { label: "Studio", value: 0 },
-  { label: "1.0", value: 1 },
-  { label: "2.0", value: 2 },
-  { label: "3.0", value: 3 },
-  { label: "4.0", value: 4 },
-  { label: "5.0", value: 5 },
-  { label: "6.0", value: 6 },
-];
-
-const bathValues: PickerItem[] = [
-  { label: "0.5", value: 0.5 },
-  { label: "1.0", value: 1 },
-  { label: "1.5", value: 1.5 },
-  { label: "2.0", value: 2 },
-  { label: "2.5", value: 2.5 },
-  { label: "3.0", value: 3 },
-  { label: "3.5", value: 3.5 },
-  { label: "4.0", value: 4 },
-  { label: "4.5", value: 4.5 },
-  { label: "5.0", value: 5 },
-  { label: "5.5", value: 5.5 },
-  { label: "6.0", value: 6 },
-  { label: "6.5", value: 6.5 },
 ];
 
 const initialValues = {

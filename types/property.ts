@@ -21,12 +21,13 @@ export type Property = {
   about: string;
   phoneNumber: string;
   website: string;
+  unitType: "single" | "multiple";
   pets: Pet[];
   stars: number;
   onMarket?: boolean;
   reviews?: Review[];
   features?: string[];
-  apartments?: Apartment[];
+  apartments: Apartment[];
   scores?: Score[];
 };
 

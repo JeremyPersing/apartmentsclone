@@ -112,7 +112,7 @@ export const Map = ({
       >
         {properties.map((i, index) => (
           <MapMarker
-            key={i.id}
+            key={i.ID}
             lat={i.lat}
             lng={i.lng}
             color={
@@ -140,7 +140,7 @@ export const Map = ({
             style={styles.card}
             onPress={() =>
               navigation.navigate("PropertyDetails", {
-                propertyID: properties[activeIndex].id,
+                propertyID: properties[activeIndex].ID,
               })
             }
           />
