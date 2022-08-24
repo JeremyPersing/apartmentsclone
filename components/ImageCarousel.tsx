@@ -11,18 +11,26 @@ import { useState, useRef } from "react";
 import { Text } from "@ui-kitten/components";
 
 import { WIDTH } from "../constants";
+import { theme } from "../theme";
 
 export const ImageCarousel = ({
   images,
   onImagePress,
   chevronsShown,
   indexShown,
+  xShown,
+  onXPress,
   imageStyle,
 }: {
   images: string[];
   onImagePress?: () => void;
   chevronsShown?: boolean;
   indexShown?: boolean;
+  xShown?: boolean;
+  onXPress?: (
+    index: number,
+    flatListRef?: React.MutableRefObject<FlatList<any> | null>
+  ) => void;
   imageStyle?: ImageStyle;
 }) => {
   const flatListRef = useRef<FlatList | null>(null);
@@ -70,15 +78,24 @@ export const ImageCarousel = ({
           pagingEnabled
           viewabilityConfig={viewConfig}
           onViewableItemsChanged={onViewRef.current}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <Pressable onPress={onImagePress}>
               <Image
                 source={{ uri: item }}
                 style={[styles.image, imageStyle]}
               />
+              {xShown && onXPress ? (
+                <MaterialCommunityIcons
+                  onPress={() => onXPress(index, flatListRef)}
+                  style={styles.x}
+                  name="close"
+                  color={theme["color-primary-500"]}
+                  size={20}
+                />
+              ) : null}
             </Pressable>
           )}
-          keyExtractor={(item) => item}
+          keyExtractor={(item, index) => item + index}
         />
       ) : (
         <Pressable onPress={onImagePress}>
@@ -151,4 +168,21 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   indexText: { color: "#fff" },
+  x: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    padding: 10,
+    zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+  },
 });

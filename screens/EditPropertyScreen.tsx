@@ -7,6 +7,7 @@ import { Formik } from "formik";
 import { PickerItem } from "react-native-woodpicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useState } from "react";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
@@ -18,6 +19,7 @@ import { Row } from "../components/Row";
 import { Select } from "../components/Select";
 import { PressableInput } from "../components/PressableInput";
 import { theme } from "../theme";
+import { UnitPhotosPicker } from "../components/UnitPhotosPicker";
 
 export const EditPropertyScreen = ({
   route,
@@ -28,6 +30,18 @@ export const EditPropertyScreen = ({
     "property",
     () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
   );
+
+  const [showUnitPhotos, setShowUnitPhotos] = useState(false);
+  const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
+
+  const handleShowUnitImages = (index: number) => {
+    setShowUnitPhotos(true);
+    setApartmentIndex(index);
+  };
+  const handleHideUnitImages = () => {
+    setShowUnitPhotos(false);
+    setApartmentIndex(-1);
+  };
 
   if (property.isFetching || property.isLoading) return <Loading />;
 
@@ -55,9 +69,11 @@ export const EditPropertyScreen = ({
   return (
     <KeyboardAwareScrollView bounces={false}>
       <Screen style={styles.container}>
-        <Text category="h5" style={styles.header}>
-          Basic Info
-        </Text>
+        {!showUnitPhotos && (
+          <Text category="h5" style={styles.header}>
+            Basic Info
+          </Text>
+        )}
         <View>
           <Formik
             initialValues={{
@@ -103,11 +119,21 @@ export const EditPropertyScreen = ({
                 setFieldValue("apartments", newApartments);
               };
 
+              if (showUnitPhotos && apartmentIndex > -1)
+                return (
+                  <UnitPhotosPicker
+                    setImages={setFieldValue}
+                    images={values.apartments[apartmentIndex].images}
+                    field={`apartments[${apartmentIndex}].images`}
+                    cancel={handleHideUnitImages}
+                  />
+                );
+
               return (
                 <>
                   {values.apartments.map((i, index) => {
                     return (
-                      <View>
+                      <View key={i.unit + index}>
                         {values.apartments.length > 1 ? (
                           <>
                             {property.data?.data.apartments &&
@@ -325,7 +351,7 @@ export const EditPropertyScreen = ({
                         </Row>
                         <Divider style={styles.divider} />
                         <TouchableOpacity
-                          onPress={() => console.log("upload photos")}
+                          onPress={() => handleShowUnitImages(index)}
                         >
                           <Text status={"info"}>Unit Photos</Text>
                         </TouchableOpacity>
