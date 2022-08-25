@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import { PickerItem } from "react-native-woodpicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
@@ -20,26 +20,35 @@ import { Select } from "../components/Select";
 import { PressableInput } from "../components/PressableInput";
 import { theme } from "../theme";
 import { UnitPhotosPicker } from "../components/UnitPhotosPicker";
+import { UnitAmenities } from "../components/UnitAmenities";
+
+const photosStr = "photos";
+const amenitiesStr = "amenities";
+const descriptionStr = "description";
 
 export const EditPropertyScreen = ({
   route,
 }: {
   route: { params: { propertyID: number } };
 }) => {
+  const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
   const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
     "property",
     () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
   );
 
-  const [showUnitPhotos, setShowUnitPhotos] = useState(false);
+  const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
 
-  const handleShowUnitImages = (index: number) => {
-    setShowUnitPhotos(true);
+  const handleShowAlternateScreen = (index: number, name: string) => {
+    // When there are multiple unit, we dont want to be
+    // half way down the screen for amenities
+    if (scrollViewRef.current) scrollViewRef.current.scrollToPosition(0, 0);
+    setShowAlternateScreen(name);
     setApartmentIndex(index);
   };
-  const handleHideUnitImages = () => {
-    setShowUnitPhotos(false);
+  const handleHideAlternateScreen = () => {
+    setShowAlternateScreen("");
     setApartmentIndex(-1);
   };
 
@@ -67,9 +76,12 @@ export const EditPropertyScreen = ({
   }
 
   return (
-    <KeyboardAwareScrollView bounces={false}>
+    <KeyboardAwareScrollView
+      bounces={false}
+      ref={(ref) => (scrollViewRef.current = ref)}
+    >
       <Screen style={styles.container}>
-        {!showUnitPhotos && (
+        {!showAlternateScreen && (
           <Text category="h5" style={styles.header}>
             Basic Info
           </Text>
@@ -119,13 +131,23 @@ export const EditPropertyScreen = ({
                 setFieldValue("apartments", newApartments);
               };
 
-              if (showUnitPhotos && apartmentIndex > -1)
+              if (showAlternateScreen === photosStr && apartmentIndex > -1)
                 return (
                   <UnitPhotosPicker
                     setImages={setFieldValue}
                     images={values.apartments[apartmentIndex].images}
                     field={`apartments[${apartmentIndex}].images`}
-                    cancel={handleHideUnitImages}
+                    cancel={handleHideAlternateScreen}
+                  />
+                );
+
+              if (showAlternateScreen === amenitiesStr && apartmentIndex > -1)
+                return (
+                  <UnitAmenities
+                    setAmenities={setFieldValue}
+                    amenities={values.apartments[apartmentIndex].amenities}
+                    field={`apartments[${apartmentIndex}].amenities`}
+                    cancel={handleHideAlternateScreen}
                   />
                 );
 
@@ -351,13 +373,17 @@ export const EditPropertyScreen = ({
                         </Row>
                         <Divider style={styles.divider} />
                         <TouchableOpacity
-                          onPress={() => handleShowUnitImages(index)}
+                          onPress={() =>
+                            handleShowAlternateScreen(index, photosStr)
+                          }
                         >
                           <Text status={"info"}>Unit Photos</Text>
                         </TouchableOpacity>
                         <Divider style={styles.divider} />
                         <TouchableOpacity
-                          onPress={() => console.log("show amenities boxes")}
+                          onPress={() =>
+                            handleShowAlternateScreen(index, amenitiesStr)
+                          }
                         >
                           <Text status={"info"}>Unit Amenities</Text>
                         </TouchableOpacity>
