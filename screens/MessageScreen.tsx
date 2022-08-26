@@ -164,12 +164,15 @@ export const MessageScreen = ({
                   onChangeText={handleChange("message")}
                   label="Custom Message"
                   multiline
+                  numberOfLines={10}
                   onBlur={() => setFieldTouched("message")}
+                  textAlignVertical="top"
                   caption={
                     touched.message && errors.message
                       ? errors.message
                       : undefined
                   }
+                  placeholder="Say something nice, or not ..."
                   status={
                     touched.message && errors.message ? "danger" : "basic"
                   }

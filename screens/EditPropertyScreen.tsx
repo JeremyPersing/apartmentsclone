@@ -21,6 +21,7 @@ import { PressableInput } from "../components/PressableInput";
 import { theme } from "../theme";
 import { UnitPhotosPicker } from "../components/UnitPhotosPicker";
 import { UnitAmenities } from "../components/UnitAmenities";
+import { UnitDescription } from "../components/UnitDescription";
 
 const photosStr = "photos";
 const amenitiesStr = "amenities";
@@ -147,6 +148,16 @@ export const EditPropertyScreen = ({
                     setAmenities={setFieldValue}
                     amenities={values.apartments[apartmentIndex].amenities}
                     field={`apartments[${apartmentIndex}].amenities`}
+                    cancel={handleHideAlternateScreen}
+                  />
+                );
+
+              if (showAlternateScreen === descriptionStr && apartmentIndex > -1)
+                return (
+                  <UnitDescription
+                    setDescription={setFieldValue}
+                    description={values.apartments[apartmentIndex].description}
+                    field={`apartments[${apartmentIndex}].description`}
                     cancel={handleHideAlternateScreen}
                   />
                 );
@@ -389,7 +400,9 @@ export const EditPropertyScreen = ({
                         </TouchableOpacity>
                         <Divider style={styles.divider} />
                         <TouchableOpacity
-                          onPress={() => console.log("show unit descriptions")}
+                          onPress={() =>
+                            handleShowAlternateScreen(index, descriptionStr)
+                          }
                         >
                           <Text status={"info"}>Unit Description</Text>
                         </TouchableOpacity>
