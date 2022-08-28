@@ -9,6 +9,8 @@ import * as yup from "yup";
 import axios from "axios";
 import { useMutation } from "react-query";
 import { useNavigation } from "@react-navigation/native";
+import { useMutation, useQuery } from "react-query";
+import { useNavigation, StackActions } from "@react-navigation/native";
 
 import { Screen } from "./Screen";
 import { ModalHeader } from "./ModalHeader";
@@ -31,6 +33,14 @@ export const AddPropertySection = () => {
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
 
+  // probably a better way to refetch all properties but this works for now
+  const properties = useQuery("myproperties", async () => {
+    if (user)
+      return axios.get<Property[]>(
+        `${endpoints.getPropertiesByUserID}${user.ID}`
+      );
+  });
+
   const createProperty = useMutation(
     "property",
     async (obj: CreateProperty) => {
@@ -41,7 +51,10 @@ export const AddPropertySection = () => {
         alert("Unable to create property");
       },
       onSuccess(data: { data: Property }) {
-        navigation.navigate("EditProperty", { propertyID: data.data.ID });
+        properties.refetch();
+        navigation.dispatch(
+          StackActions.replace("EditProperty", { propertyID: data.data.ID })
+        );
       },
     }
   );

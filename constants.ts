@@ -2,6 +2,9 @@ import { Dimensions, Platform, StatusBar } from "react-native";
 
 export const LISTMARGIN = 10;
 export const WIDTH = Dimensions.get("screen").width - LISTMARGIN * 2;
+export const PHOTOS_STR = "photos";
+export const AMENITIES_STR = "amenities";
+export const DESCRIPTION_STR = "description";
 
 const baseHeight = 160;
 const iosNotch = 40;
