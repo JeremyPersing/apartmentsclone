@@ -29,6 +29,7 @@ import { petValues } from "../constants/petValues";
 import { laundryValues } from "../constants/laundryValues";
 import { ContactInfo } from "../components/editPropertySections/ContactInfo";
 import { useAuth } from "../hooks/useAuth";
+import { TempApartment } from "../types/tempApartment";
 
 export const EditPropertyScreen = ({
   route,
