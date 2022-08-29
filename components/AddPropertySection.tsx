@@ -7,8 +7,6 @@ import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
 import axios from "axios";
-import { useMutation } from "react-query";
-import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery } from "react-query";
 import { useNavigation, StackActions } from "@react-navigation/native";
 
