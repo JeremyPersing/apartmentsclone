@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Input, Toggle, Text, Divider } from "@ui-kitten/components";
 import { FormikErrors, FormikTouched } from "formik";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "react-native-modal-datetime-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Row } from "../Row";
@@ -14,8 +14,10 @@ import { bathValues } from "../../constants/bathValues";
 import { AMENITIES_STR, DESCRIPTION_STR, PHOTOS_STR } from "../../constants";
 import { theme } from "../../theme";
 import { EditPropertyInitialValues } from "../../types/editPropertyInitialValues";
+import { PickerItem } from "react-native-woodpicker/dist/types";
 
 export const UnitsInput = ({
+  unitType,
   apartments,
   property,
   touched,
@@ -25,6 +27,7 @@ export const UnitsInput = ({
   handleChange,
   handleShowAlternateScreen,
 }: {
+  unitType: string | undefined;
   apartments: TempApartment[];
   property: Property | undefined;
   touched: FormikTouched<EditPropertyInitialValues>;
@@ -68,11 +71,17 @@ export const UnitsInput = ({
     });
 
     setFieldValue("apartments", newApartments);
+    if (newApartments.length > 1 && unitType !== "mutliple") {
+      setFieldValue("unitType", "multiple");
+    }
   };
 
   const removeUnit = (index: number) => {
     const newApartments = apartments.filter((i, idx) => idx !== index);
     setFieldValue("apartments", newApartments);
+    if (newApartments.length === 1 && unitType !== "single") {
+      setFieldValue("unitType", "single");
+    }
   };
 
   return (
@@ -108,6 +117,7 @@ export const UnitsInput = ({
                   onBlur={() => setFieldTouched(`apartments[${index}].unit`)}
                   caption={
                     touched.apartments &&
+                    (touched.apartments[index] as any)?.unit &&
                     errors.apartments &&
                     (errors.apartments[index] as any)?.unit
                       ? (errors.apartments[index] as any)?.unit
@@ -115,6 +125,7 @@ export const UnitsInput = ({
                   }
                   status={
                     touched.apartments &&
+                    (touched.apartments[index] as any)?.unit &&
                     errors.apartments &&
                     (errors.apartments[index] as any)?.unit
                       ? "danger"
@@ -126,7 +137,7 @@ export const UnitsInput = ({
             <Row style={[styles.input, styles.unitRow]}>
               <Select
                 label="Beds"
-                item={i.bedrooms}
+                item={i.bedrooms as PickerItem}
                 items={bedValues}
                 onItemChange={(item) => {
                   setFieldValue(`apartments[${index}].bedrooms`, item);
@@ -136,7 +147,7 @@ export const UnitsInput = ({
               />
               <Select
                 label="Baths"
-                item={i.bathrooms}
+                item={i.bathrooms as PickerItem}
                 items={bathValues}
                 onItemChange={(item) => {
                   setFieldValue(`apartments[${index}].bathrooms`, item);
@@ -147,7 +158,7 @@ export const UnitsInput = ({
             </Row>
             <Input
               style={styles.input}
-              value={i.sqFt}
+              value={i.sqFt as string}
               onChangeText={handleChange(`apartments[${index}].sqFt`)}
               label="Sq Ft"
               placeholder="SF"
@@ -155,6 +166,7 @@ export const UnitsInput = ({
               onBlur={() => setFieldTouched(`apartments[${index}].sqFt`)}
               caption={
                 touched.apartments &&
+                (touched.apartments[index] as any)?.sqFt &&
                 errors.apartments &&
                 (errors.apartments[index] as any)?.sqFt
                   ? (errors.apartments[index] as any)?.sqFt
@@ -162,6 +174,7 @@ export const UnitsInput = ({
               }
               status={
                 touched.apartments &&
+                (touched.apartments[index] as any)?.sqFt &&
                 errors.apartments &&
                 (errors.apartments[index] as any)?.sqFt
                   ? "danger"
@@ -174,11 +187,12 @@ export const UnitsInput = ({
                 label={"Rent"}
                 placeholder="$/mo"
                 keyboardType="number-pad"
-                value={i.rent}
+                value={i.rent as string}
                 onChangeText={handleChange(`apartments[${index}].rent`)}
                 onBlur={() => setFieldTouched(`apartments[${index}].rent`)}
                 caption={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.rent &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.rent
                     ? (errors.apartments[index] as any)?.rent
@@ -186,6 +200,7 @@ export const UnitsInput = ({
                 }
                 status={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.rent &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.rent
                     ? "danger"
@@ -196,11 +211,12 @@ export const UnitsInput = ({
                 style={styles.smallInput}
                 label={"Deposit"}
                 keyboardType="number-pad"
-                value={i.deposit}
+                value={i.deposit as string}
                 onChangeText={handleChange(`apartments[${index}].deposit`)}
                 onBlur={() => setFieldTouched(`apartments[${index}].deposit`)}
                 caption={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.deposit &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.deposit
                     ? (errors.apartments[index] as any)?.deposit
@@ -208,6 +224,7 @@ export const UnitsInput = ({
                 }
                 status={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.deposit &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.deposit
                     ? "danger"
@@ -227,6 +244,7 @@ export const UnitsInput = ({
                 }
                 caption={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.leaseLength &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.leaseLength
                     ? (errors.apartments[index] as any)?.leaseLength
@@ -234,6 +252,7 @@ export const UnitsInput = ({
                 }
                 status={
                   touched.apartments &&
+                  (touched.apartments[index] as any)?.leaseLength &&
                   errors.apartments &&
                   (errors.apartments[index] as any)?.leaseLength
                     ? "danger"
@@ -248,21 +267,22 @@ export const UnitsInput = ({
                 value={i.availableOn.toDateString()}
                 label={"Available On"}
               />
-              {i.showCalendar && (
-                <DateTimePicker
-                  value={i.availableOn}
-                  mode="date"
-                  onChange={(event: any, selectedDate?: Date) => {
-                    if (selectedDate) {
-                      setFieldValue(`apartments[${index}].showCalendar`, false);
-                      setFieldValue(
-                        `apartments[${index}].availableOn`,
-                        selectedDate
-                      );
-                    }
-                  }}
-                />
-              )}
+              <DateTimePicker
+                isVisible={i.showCalendar}
+                mode="date"
+                onConfirm={(selectedDate: Date) => {
+                  if (selectedDate) {
+                    setFieldValue(
+                      `apartments[${index}].availableOn`,
+                      selectedDate
+                    );
+                    setFieldValue(`apartments[${index}].showCalendar`, false);
+                  }
+                }}
+                onCancel={() =>
+                  setFieldValue(`apartments[${index}].showCalendar`, false)
+                }
+              />
             </Row>
             <Divider style={styles.divider} />
             <TouchableOpacity

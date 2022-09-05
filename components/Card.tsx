@@ -20,6 +20,7 @@ import { CardInformation } from "./CardInformation";
 import { LISTMARGIN } from "../constants";
 import { theme } from "../theme";
 import { endpoints } from "../constants";
+import { useLoading } from "../hooks/useLoading";
 
 export const Card = ({
   property,
@@ -32,6 +33,7 @@ export const Card = ({
   myProperty?: boolean;
   style?: ViewStyle;
 }) => {
+  const { setLoading } = useLoading();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
@@ -41,6 +43,7 @@ export const Card = ({
     () => axios.delete(`${endpoints.deleteProperty}${property.ID}`),
     {
       onMutate: async () => {
+        setLoading(true);
         await queryClient.cancelQueries("myproperties");
 
         const prevProperties: { data: Property[] } | undefined =
@@ -57,6 +60,7 @@ export const Card = ({
         return { prevProperties };
       },
       onError: (err, newTodo, context) => {
+        setLoading(false);
         if (context?.prevProperties)
           queryClient.setQueryData(
             "myproperties",
@@ -64,6 +68,7 @@ export const Card = ({
           );
       },
       onSettled: () => {
+        setLoading(false);
         queryClient.invalidateQueries("myproperties");
       },
     }

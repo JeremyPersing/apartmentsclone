@@ -10,14 +10,16 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import { theme } from "./theme";
-import { AuthContext } from "./context";
+import { AuthContext, LoadingContext } from "./context";
 import { User } from "./types/user";
+
+const queryClient = new QueryClient();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  const queryClient = new QueryClient();
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function getUser() {
@@ -31,16 +33,18 @@ export default function App() {
     return null;
   } else {
     return (
-      <AuthContext.Provider value={{ user, setUser }}>
-        <QueryClientProvider client={queryClient}>
-          <ApplicationProvider {...eva} theme={theme}>
-            <SafeAreaProvider>
-              <Navigation colorScheme={colorScheme} />
-              <StatusBar />
-            </SafeAreaProvider>
-          </ApplicationProvider>
-        </QueryClientProvider>
-      </AuthContext.Provider>
+      <LoadingContext.Provider value={{ loading, setLoading }}>
+        <AuthContext.Provider value={{ user, setUser }}>
+          <QueryClientProvider client={queryClient}>
+            <ApplicationProvider {...eva} theme={theme}>
+              <SafeAreaProvider>
+                <Navigation colorScheme={colorScheme} />
+                <StatusBar />
+              </SafeAreaProvider>
+            </ApplicationProvider>
+          </QueryClientProvider>
+        </AuthContext.Provider>
+      </LoadingContext.Provider>
     );
   }
 }

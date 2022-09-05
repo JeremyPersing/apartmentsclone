@@ -9,12 +9,18 @@ export const PhoneInput = ({
   onChangeText,
   phoneNumber,
   phoneRef,
+  countryCode,
+  error,
   style,
+  onBlur,
 }: {
   onChangeText: (text: string) => void | undefined;
   phoneNumber: string;
   phoneRef?: Ref<RNPhoneInput> | null;
+  countryCode?: string;
+  error?: string;
   style?: ViewStyle | ViewStyle[];
+  onBlur?: () => void;
 }) => {
   const [borderColor, setBorderColor] = useState(theme["color-light-gray"]);
   if (!phoneRef) phoneRef = useRef<RNPhoneInput>(null);
@@ -28,10 +34,11 @@ export const PhoneInput = ({
       <RNPhoneInput
         ref={phoneRef}
         onChangeText={onChangeText}
-        defaultCode={"US"}
+        value={phoneNumber}
+        defaultCode={countryCode ? (countryCode as any) : "US"}
         containerStyle={[
           {
-            borderColor: borderColor,
+            borderColor: error ? theme["color-danger-500"] : borderColor,
           },
           styles.containerStyle,
           styles.input,
@@ -43,6 +50,7 @@ export const PhoneInput = ({
             setBorderColor(theme["color-primary-500"]);
           },
           onBlur(e) {
+            if (onBlur) onBlur();
             setBorderColor(theme["color-light-gray"]);
             if (
               !(phoneRef as any).current?.isValidNumber(phoneNumber) &&
@@ -57,9 +65,9 @@ export const PhoneInput = ({
         textContainerStyle={styles.textContainer}
       />
 
-      {borderColor === theme["color-danger-500"] ? (
+      {borderColor === theme["color-danger-500"] || error ? (
         <Text category="c1" style={styles.errorText}>
-          Invalid Phone Number
+          {error ? error : "Invalid Phone Number"}
         </Text>
       ) : null}
     </View>

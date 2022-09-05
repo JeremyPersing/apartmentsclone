@@ -1,8 +1,6 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import LottieView from "lottie-react-native";
-import { useEffect, useRef } from "react";
-
-import { Screen } from "./Screen";
+import { useRef } from "react";
 
 export const Loading = () => {
   const animation = useRef<LottieView | null>(null);
@@ -12,19 +10,20 @@ export const Loading = () => {
   }, 100);
 
   return (
-    <Screen style={styles.container}>
+    <View style={styles.container}>
       <LottieView
         ref={animation}
         source={require("../assets/lotties/Loading.json")}
         style={styles.lottie}
       />
-    </Screen>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: Dimensions.get("screen").height,
+    width: Dimensions.get("screen").width,
     justifyContent: "center",
     alignItems: "center",
   },

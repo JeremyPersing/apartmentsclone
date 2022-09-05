@@ -38,4 +38,5 @@ export const endpoints = {
   getPropertyByID: propertyEndpoint + "/",
   getPropertiesByUserID: propertyEndpoint + "/userid/",
   deleteProperty: propertyEndpoint + "/",
+  updateProperty: propertyEndpoint + "/update/",
 };

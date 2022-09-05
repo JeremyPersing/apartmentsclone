@@ -12,9 +12,11 @@ export type EditPropertyInitialValues = {
   laundryType: PickerItem;
   parkingFee: string;
   amenities: string[];
+  name: string;
   firstName: string;
   lastName: string;
   email: string;
+  website: string;
   phoneNumber: string;
   onMarket: boolean;
 };

@@ -1,11 +1,19 @@
 import { StyleSheet, View } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
 import axios from "axios";
-import { useQuery, UseQueryResult } from "react-query";
+import {
+  useQuery,
+  UseQueryResult,
+  useMutation,
+  useQueryClient,
+} from "react-query";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Formik } from "formik";
 import { useState, useRef } from "react";
 import RNPhoneInput from "react-native-phone-number-input";
+import { PickerItem } from "react-native-woodpicker/dist/types";
+import { useNavigation } from "@react-navigation/native";
+import * as yup from "yup";
 
 import { Loading } from "../components/Loading";
 import { Screen } from "../components/Screen";
@@ -30,6 +38,7 @@ import { laundryValues } from "../constants/laundryValues";
 import { ContactInfo } from "../components/editPropertySections/ContactInfo";
 import { useAuth } from "../hooks/useAuth";
 import { TempApartment } from "../types/tempApartment";
+import { useLoading } from "../hooks/useLoading";
 
 export const EditPropertyScreen = ({
   route,
@@ -43,9 +52,32 @@ export const EditPropertyScreen = ({
     () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
   );
   const phoneRef = useRef<RNPhoneInput>(null);
+  const propertyData = property.data?.data;
 
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
+  const { setLoading } = useLoading();
+  const navigation = useNavigation();
+  const queryClient = useQueryClient();
+
+  const editProperty = useMutation(
+    (obj: EditPropertyObj) =>
+      axios.patch(`${endpoints.updateProperty}${route.params.propertyID}`, obj),
+    {
+      onMutate: () => {
+        setLoading(true);
+      },
+      onError(err) {
+        setLoading(false);
+        alert("Error updating property");
+      },
+      onSuccess() {
+        queryClient.invalidateQueries("myproperties");
+        setLoading(false);
+        navigation.goBack();
+      },
+    }
+  );
 
   const handleShowAlternateScreen = (index: number, name: string) => {
     // When there are multiple unit, we dont want to be
@@ -62,22 +94,23 @@ export const EditPropertyScreen = ({
   if (property.isFetching || property.isLoading) return <Loading />;
 
   let initialApartments: TempApartment[] = [];
-  if (property.data?.data) {
-    for (let i of property.data.data.apartments) {
+  if (propertyData) {
+    for (let i of propertyData.apartments) {
       initialApartments.push({
+        ID: i.ID,
         unit: i.unit ? i.unit : "",
         bedrooms: bedValues.filter((item) => item.value === i.bedrooms)[0],
         bathrooms: bathValues.filter((item) => item.value === i.bathrooms)[0],
-        sqFt: "",
-        rent: "",
-        deposit: "0",
-        leaseLength: "12 Months",
-        availableOn: new Date(),
-        active: true,
+        sqFt: i.sqFt ? i.sqFt.toString() : "",
+        rent: i.rent ? i.rent.toString() : "",
+        deposit: i.deposit ? i.deposit.toString() : "0",
+        leaseLength: i?.leaseLength ? i.leaseLength : "12 Months",
+        availableOn: i?.availableOn ? new Date(i.availableOn) : new Date(),
+        active: i.active ? i.active : true,
         showCalendar: false,
-        images: [],
-        amenities: [],
-        description: "",
+        images: i.images ? i.images : [],
+        amenities: i.amenities ? i.amenities : [],
+        description: i.description ? i.description : "",
       });
     }
   }
@@ -96,22 +129,93 @@ export const EditPropertyScreen = ({
         <View>
           <Formik
             initialValues={{
-              unitType: property.data?.data.unitType,
+              unitType: propertyData?.unitType,
               apartments: initialApartments,
-              description: "",
-              images: [],
-              includedUtilities: [],
-              petsAllowed: petValues[0],
-              laundryType: laundryValues[0],
-              parkingFee: "",
-              amenities: [],
-              firstName: user?.firstName ? user.firstName : "",
-              lastName: user?.lastName ? user.lastName : "",
-              email: user ? user.email : "",
-              phoneNumber: "",
-              onMarket: false,
+              description: propertyData?.description ?? "",
+              images: propertyData?.images ?? [],
+              includedUtilities: propertyData?.includedUtilities ?? [],
+              petsAllowed: propertyData?.petsAllowed
+                ? petValues.filter(
+                    (i) => i.value === propertyData.petsAllowed
+                  )[0]
+                : petValues[0],
+              laundryType: propertyData?.laundryType
+                ? laundryValues.filter(
+                    (i) => i.value === propertyData.laundryType
+                  )[0]
+                : laundryValues[0],
+              parkingFee: propertyData?.parkingFee?.toString() ?? "",
+              amenities: propertyData?.amenities ?? [],
+              name: propertyData?.name ?? "",
+              firstName: propertyData?.firstName
+                ? propertyData.firstName
+                : user?.firstName
+                ? user.firstName
+                : "",
+              lastName: propertyData?.lastName
+                ? propertyData.lastName
+                : user?.lastName
+                ? user.lastName
+                : "",
+              email: propertyData?.email
+                ? propertyData.email
+                : user?.email
+                ? user.email
+                : "",
+              countryCode: propertyData?.countryCode ?? "US",
+              callingCode: propertyData?.callingCode ?? "",
+              phoneNumber: propertyData?.phoneNumber ?? "",
+              website: propertyData?.website ?? "",
+              onMarket: propertyData?.onMarket ? propertyData.onMarket : false,
             }}
-            onSubmit={(values) => console.log(values)}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              const callingCode = phoneRef.current?.getCallingCode();
+              const countryCode = phoneRef.current?.getCountryCode();
+
+              const newApartments = [];
+              for (let i of values.apartments) {
+                newApartments.push({
+                  ID: i.ID,
+                  unit: i.unit,
+                  bedrooms: (i.bedrooms as PickerItem).value,
+                  bathrooms: (i.bathrooms as PickerItem).value,
+                  sqFt: Number(i.sqFt),
+                  rent: Number(i.rent),
+                  deposit: Number(i.deposit),
+                  leaseLength: i.leaseLength,
+                  availableOn: i.availableOn,
+                  active: i.active,
+                  images: i.images,
+                  amenities: i.amenities,
+                  description: i.description,
+                });
+              }
+
+              const obj: EditPropertyObj = {
+                ID: route.params.propertyID,
+                unitType: values.unitType,
+                amenities: values.amenities,
+                apartments: newApartments,
+                description: values.description,
+                email: values.email,
+                firstName: values.firstName,
+                images: values.images,
+                lastName: values.lastName,
+                includedUtilities: values.includedUtilities,
+                laundryType: values.laundryType.value,
+                name: values.name,
+                onMarket: values.onMarket,
+                parkingFee: Number(values.parkingFee),
+                petsAllowed: values.petsAllowed.value,
+                callingCode,
+                countryCode,
+                phoneNumber: values.phoneNumber,
+                website: values.website,
+              };
+
+              editProperty.mutate(obj);
+            }}
           >
             {({
               values,
@@ -158,8 +262,9 @@ export const EditPropertyScreen = ({
               return (
                 <>
                   <UnitsInput
+                    unitType={values.unitType}
                     apartments={values.apartments}
-                    property={property.data?.data}
+                    property={propertyData}
                     errors={errors}
                     handleChange={handleChange}
                     handleShowAlternateScreen={handleShowAlternateScreen}
@@ -182,16 +287,24 @@ export const EditPropertyScreen = ({
                     setFieldValue={setFieldValue}
                   />
                   <ContactInfo
+                    name={values.name}
                     email={values.email}
                     errors={errors}
                     firstName={values.firstName}
+                    website={values.website}
                     handleChange={handleChange}
                     lastName={values.lastName}
                     phoneNumber={values.phoneNumber}
+                    countryCode={values.countryCode}
                     phoneRef={phoneRef}
                     setFieldTouched={setFieldTouched}
                     touched={touched}
                   />
+                  {Object.keys(errors).length > 0 ? (
+                    <Text status={"danger"} category="label">
+                      {"Check Errors Above"}
+                    </Text>
+                  ) : null}
                   <Button
                     style={styles.largeMarginTop}
                     onPress={() => handleSubmit()}
@@ -232,3 +345,100 @@ const styles = StyleSheet.create({
   },
   largeMarginTop: { marginTop: 30 },
 });
+
+const validationSchema = yup.object().shape({
+  unitType: yup.string().required(),
+  apartments: yup.array().when("unitType", {
+    is: "multiple",
+    then: yup.array(
+      yup.object().shape({
+        unit: yup.string().required("Required"),
+        bedrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+        bathrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+        sqFt: yup.string().required("Required"),
+        rent: yup.string().required("Required"),
+        deposit: yup.string().required("Required"),
+        leaseLength: yup.string().required("Required"),
+        availableOn: yup.date().required("Required"),
+        active: yup.boolean().required("Required"),
+        showCalendar: yup.boolean(),
+        images: yup.array().of(yup.string()),
+        amenities: yup.array().of(yup.string()),
+        description: yup.string(),
+      })
+    ),
+    otherwise: yup.array(
+      yup.object().shape({
+        unit: yup.string(),
+        bedrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+        bathrooms: yup.object().shape({
+          label: yup.string().required("Required"),
+          value: yup.string().required("Required"),
+        }),
+        sqFt: yup.string().required("Required"),
+        rent: yup.string().required("Required"),
+        deposit: yup.string().required("Required"),
+        leaseLength: yup.string().required("Required"),
+        availableOn: yup.date().required("Required"),
+        active: yup.boolean().required("Required"),
+        showCalendar: yup.boolean(),
+        images: yup.array().of(yup.string()),
+        amenities: yup.array().of(yup.string()),
+        description: yup.string(),
+      })
+    ),
+  }),
+  description: yup.string(),
+  images: yup.array().of(yup.string()),
+  includedUtilities: yup.array().of(yup.string()),
+  petsAllowed: yup.object().shape({
+    label: yup.string().required("Required"),
+    value: yup.string().required("Required"),
+  }),
+  laundryType: yup.object().shape({
+    label: yup.string().required("Required"),
+    value: yup.string().required("Required"),
+  }),
+  parkingFee: yup.string(),
+  amenities: yup.array().of(yup.string()),
+  name: yup.string(),
+  firstName: yup.string(),
+  lastName: yup.string(),
+  email: yup.string().required("Required"),
+  callingCode: yup.string(),
+  countryCode: yup.string(),
+  phoneNumber: yup.string().required("Required"),
+  website: yup.string().url(),
+  onMarket: yup.boolean().required(),
+});
+
+type EditPropertyObj = {
+  ID?: number;
+  unitType?: "single" | "multiple";
+  apartments: TempApartment[];
+  description: string;
+  images: string[];
+  includedUtilities: string[];
+  petsAllowed: string;
+  laundryType: string;
+  parkingFee: number;
+  amenities: string[];
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  callingCode?: string;
+  countryCode?: string;
+  phoneNumber: string;
+  website: string;
+  onMarket: boolean;
+};

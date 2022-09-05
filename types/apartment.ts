@@ -7,6 +7,12 @@ export type Apartment = {
   rent: number;
   sqFt: number;
   unit: string;
+  deposit: number;
+  leaseLength: string;
+  availableOn: string;
+  active: boolean;
+  amenities: string[];
+  description: string;
   CreatedAt: string;
   UpdatedAt?: string | null;
   DeletedAt?: string | null;

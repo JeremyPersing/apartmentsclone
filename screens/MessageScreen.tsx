@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { Platform, StyleSheet, View, Image, Pressable } from "react-native";
+import { Platform, StyleSheet, View, Image } from "react-native";
 import { Input, Button, Text } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -145,18 +144,17 @@ export const MessageScreen = ({
                   onPress={() => setFieldValue("showCalendar", true)}
                 />
 
-                {values.showCalendar && (
-                  <DateTimePicker
-                    value={values.date}
-                    mode="date"
-                    onChange={(event: any, selectedDate?: Date) => {
-                      if (selectedDate) {
-                        setFieldValue("showCalendar", false);
-                        setFieldValue("date", selectedDate);
-                      }
-                    }}
-                  />
-                )}
+                <DateTimePicker
+                  isVisible={values.showCalendar}
+                  mode="date"
+                  onConfirm={(selectedDate: Date) => {
+                    if (selectedDate) {
+                      setFieldValue("showCalendar", false);
+                      setFieldValue("date", selectedDate);
+                    }
+                  }}
+                  onCancel={() => setFieldValue("showCalendar", false)}
+                />
 
                 <Input
                   style={styles.input}

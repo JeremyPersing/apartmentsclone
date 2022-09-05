@@ -10,7 +10,7 @@ export type Property = {
   rentHigh: number;
   bedroomLow: number;
   bedroomHigh: number;
-  name: string;
+  name?: string;
   street: string;
   city: string;
   state: string;
@@ -19,9 +19,12 @@ export type Property = {
   lat: number;
   lng: number;
   about: string;
+  countryCode: string;
+  callingCode: string;
   phoneNumber: string;
   website: string;
   unitType: "single" | "multiple";
+  description: string;
   pets: Pet[];
   stars: number;
   onMarket?: boolean;
@@ -29,6 +32,14 @@ export type Property = {
   features?: string[];
   apartments: Apartment[];
   scores?: Score[];
+  includedUtilities?: string[];
+  amenities?: string[];
+  petsAllowed: string;
+  laundryType: string;
+  parkingFee?: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 };
 
 export type CreateProperty = {
@@ -41,5 +52,11 @@ export type CreateProperty = {
   lat: number;
   lng: number;
   userID: number;
-  apartments: { unit?: string; bedrooms: number; bathrooms: number }[];
+  apartments: {
+    unit?: string;
+    bedrooms: number;
+    bathrooms: number;
+    active: boolean;
+    availableOn: Date;
+  }[];
 };

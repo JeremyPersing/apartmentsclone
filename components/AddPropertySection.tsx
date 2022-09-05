@@ -7,9 +7,7 @@ import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
 import axios from "axios";
-import { useMutation } from "react-query";
-import { useNavigation } from "@react-navigation/native";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useNavigation, StackActions } from "@react-navigation/native";
 
 import { Screen } from "./Screen";
@@ -32,14 +30,7 @@ export const AddPropertySection = () => {
   const navigation = useNavigation();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
-
-  // probably a better way to refetch all properties but this works for now
-  const properties = useQuery("myproperties", async () => {
-    if (user)
-      return axios.get<Property[]>(
-        `${endpoints.getPropertiesByUserID}${user.ID}`
-      );
-  });
+  const queryClient = useQueryClient();
 
   const createProperty = useMutation(
     "property",
@@ -51,7 +42,7 @@ export const AddPropertySection = () => {
         alert("Unable to create property");
       },
       onSuccess(data: { data: Property }) {
-        properties.refetch();
+        queryClient.invalidateQueries("myproperties");
         navigation.dispatch(
           StackActions.replace("EditProperty", { propertyID: data.data.ID })
         );
@@ -92,18 +83,23 @@ export const AddPropertySection = () => {
         apartments: [],
       };
 
+      const availableOn = new Date();
       if (values.unitType === "multiple") {
         for (let i of values.units) {
           obj.apartments.push({
             unit: i.unit,
             bathrooms: i.bathrooms.value,
             bedrooms: i.bedrooms.value,
+            active: true,
+            availableOn,
           });
         }
       } else {
         obj.apartments.push({
           bathrooms: values.unit.bathrooms.value,
           bedrooms: values.unit.bedrooms.value,
+          active: true,
+          availableOn,
         });
       }
 
