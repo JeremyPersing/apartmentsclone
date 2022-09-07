@@ -106,7 +106,7 @@ export const EditPropertyScreen = ({
         deposit: i.deposit ? i.deposit.toString() : "0",
         leaseLength: i?.leaseLength ? i.leaseLength : "12 Months",
         availableOn: i?.availableOn ? new Date(i.availableOn) : new Date(),
-        active: i.active ? i.active : true,
+        active: i.active ?? true,
         showCalendar: false,
         images: i.images ? i.images : [],
         amenities: i.amenities ? i.amenities : [],
@@ -315,11 +315,15 @@ export const EditPropertyScreen = ({
                     appearance={"ghost"}
                     style={[styles.saveButton]}
                     onPress={() => {
-                      setFieldValue("onMarket", true);
+                      if (propertyData?.onMarket)
+                        setFieldValue("onMarket", false);
+                      else setFieldValue("onMarket", true);
                       handleSubmit();
                     }}
                   >
-                    Publish Listing
+                    {propertyData?.onMarket
+                      ? "Unpublish Listing"
+                      : "Publish Listing"}
                   </Button>
                 </>
               );

@@ -1,3 +1,5 @@
+import { PickerItem } from "react-native-woodpicker/dist/types";
+
 export type Apartment = {
   ID: number;
   bathrooms: number;
@@ -16,4 +18,15 @@ export type Apartment = {
   CreatedAt: string;
   UpdatedAt?: string | null;
   DeletedAt?: string | null;
+};
+
+export type EditApartment = {
+  ID?: number;
+  unit: string;
+  bedrooms: PickerItem | number;
+  bathrooms: PickerItem | number;
+  sqFt: string | number;
+  active: boolean;
+  editName: boolean;
+  availableOn: Date;
 };

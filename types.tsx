@@ -28,6 +28,7 @@ export type RootStackParamList = {
   AddProperty: undefined;
   EditProperty: { propertyID: number };
   MyProperties: undefined;
+  ManageUnits: { propertyID: number };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
