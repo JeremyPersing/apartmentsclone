@@ -27,14 +27,24 @@ export const CardInformation = ({
   const editPropertyNavigation = () =>
     navigation.navigate("EditProperty", { propertyID: property.ID });
 
+  const getLowAndHighText = (type: "rent" | "bedroom") => {
+    if (type === "rent") {
+      if (property.rentLow === property.rentHigh)
+        return `$${property.rentLow.toLocaleString()}`;
+      return `$${property.rentLow.toLocaleString()} - ${property.rentHigh.toLocaleString()}`;
+    }
+
+    let bedLow = property.bedroomLow === 0 ? "Studio" : property.bedroomLow;
+    if (property.bedroomLow === property.bedroomHigh) return bedLow;
+
+    return `${bedLow} - ${property.bedroomHigh} Beds`;
+  };
+
   const DefaultInfo = () => (
     <>
       {property?.rentLow && property?.rentHigh && (
         <Row style={styles.rowJustification}>
-          <Text category={"s1"}>
-            ${property.rentLow.toLocaleString()} -{" "}
-            {property.rentHigh.toLocaleString()}
-          </Text>
+          <Text category={"s1"}>{getLowAndHighText("rent")}</Text>
           <MaterialCommunityIcons
             name="heart-outline"
             color={theme["color-primary-500"]}
@@ -42,23 +52,25 @@ export const CardInformation = ({
           />
         </Row>
       )}
-      <Text category={"c1"}>
-        {property.bedroomLow === 0 ? "Studio" : property.bedroomLow} -{" "}
-        {property.bedroomHigh} Beds
-      </Text>
-      <Text category={"c1"} style={styles.defaultMarginTop}>
-        {property.name}
-      </Text>
+      <Text category={"c1"}>{getLowAndHighText("bedroom")}</Text>
+      {property?.name ? (
+        <Text category={"c1"} style={styles.defaultMarginTop}>
+          {property.name}
+        </Text>
+      ) : null}
       <Text category={"c1"}>{property.street}</Text>
       <Text category={"c1"}>
         {property.city}, {property.state} {property.zip}
       </Text>
 
-      {property?.tags ? (
+      {property?.includedUtilities && property.includedUtilities.length > 0 ? (
         <Text category={"c1"} style={styles.defaultMarginTop}>
-          {property.tags.map((tag, index) =>
-            index === property.tags.length - 1 ? tag : `${tag}, `
-          )}
+          {property.includedUtilities.map((tag, index) => {
+            return property.includedUtilities &&
+              index === property.includedUtilities.length - 1
+              ? tag
+              : `${tag}, `;
+          })}
         </Text>
       ) : null}
 

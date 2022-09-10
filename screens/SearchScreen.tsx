@@ -3,9 +3,11 @@ import { useState, useEffect, useRef } from "react";
 import MapView from "react-native-maps";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 import { Screen } from "../components/Screen";
-import { HEADERHEIGHT } from "../constants";
+import { endpoints, HEADERHEIGHT } from "../constants";
 import { Card } from "../components/Card";
 import { AnimatedListHeader } from "../components/AnimatedListHeader";
 import { getPropertiesInArea } from "../data/properties";
@@ -23,20 +25,35 @@ export const SearchScreen = ({
   const [mapShown, setMapShown] = useState<boolean>(false);
   const [scrollAnimation] = useState(new Animated.Value(0));
   const mapRef = useRef<MapView | null>(null);
-  const [properties, setProperties] = useState<Property[]>([]);
   const [location, setLocation] = useState<string | undefined>(undefined);
+  const searchProperties = useQuery(
+    "searchproperties",
+    () => {
+      if (route.params.boundingBox) {
+        const boundingBox = [
+          Number(route.params.boundingBox[0]),
+          Number(route.params.boundingBox[1]),
+          Number(route.params.boundingBox[2]),
+          Number(route.params.boundingBox[3]),
+        ];
+
+        return axios.post(`${endpoints.getPropertiesByBoundingBox}`, {
+          latLow: boundingBox[0],
+          latHigh: boundingBox[1],
+          lngLow: boundingBox[2],
+          lngHigh: boundingBox[3],
+        });
+      }
+    },
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     if (route.params) {
-      const numBoundingBox = [
-        Number(route.params.boundingBox[0]),
-        Number(route.params.boundingBox[1]),
-        Number(route.params.boundingBox[2]),
-        Number(route.params.boundingBox[3]),
-      ];
-
       setLocation(route.params.location);
-      setProperties(getPropertiesInArea(numBoundingBox));
+      searchProperties.refetch();
 
       mapRef?.current?.animateCamera({
         center: {
@@ -54,15 +71,18 @@ export const SearchScreen = ({
         setMapShown={setMapShown}
         mapShown={mapShown}
         location={location ? location : "Find a Location"}
-        availableProperties={properties ? properties.length : undefined}
+        availableProperties={
+          searchProperties.data?.data
+            ? searchProperties.data?.data.length
+            : undefined
+        }
       />
       {mapShown ? (
         <Map
-          properties={properties}
+          properties={searchProperties.data?.data}
           mapRef={mapRef}
           location={location ? location : "Find a Location"}
           setLocation={setLocation}
-          setProperties={setProperties}
           initialRegion={
             route.params
               ? {
@@ -76,7 +96,7 @@ export const SearchScreen = ({
         />
       ) : (
         <>
-          {properties.length > 0 ? (
+          {searchProperties.data && searchProperties.data?.data.length > 0 ? (
             <Animated.FlatList
               onScroll={Animated.event(
                 [
@@ -93,7 +113,7 @@ export const SearchScreen = ({
               contentContainerStyle={{ paddingTop: HEADERHEIGHT - 20 }}
               bounces={false}
               scrollEventThrottle={16}
-              data={properties}
+              data={searchProperties.data?.data}
               keyExtractor={(item) => item.ID.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (

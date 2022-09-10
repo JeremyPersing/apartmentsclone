@@ -3,13 +3,16 @@ import { View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useQuery } from "react-query";
+import { Button } from "@ui-kitten/components";
+import axios from "axios";
 
 import { Property } from "../types/property";
 import { MapMarker } from "./MapMarker";
 import { theme } from "../theme";
 import { Card } from "./Card";
-import { Button } from "@ui-kitten/components";
 import { getPropertiesInArea } from "../data/properties";
+import { endpoints } from "../constants";
 
 // used to persist the region if search area from the map
 let mapRegion: Region | undefined = undefined;
@@ -19,14 +22,12 @@ export const Map = ({
   mapRef,
   location,
   setLocation,
-  setProperties,
   initialRegion,
 }: {
   properties: Property[];
   mapRef: React.MutableRefObject<MapView | null>;
   location: string;
   setLocation: (location: string) => void;
-  setProperties: (properties: Property[]) => void; // going to get rid of later
   initialRegion?: Region | undefined;
 }) => {
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -36,6 +37,23 @@ export const Map = ({
     mapRegion ? mapRegion : undefined
   );
   const navigation = useNavigation();
+
+  const searchProperties = useQuery(
+    "searchproperties",
+    () => {
+      if (boundingBox.length > 0) {
+        return axios.post(`${endpoints.getPropertiesByBoundingBox}`, {
+          latLow: boundingBox[0],
+          latHigh: boundingBox[1],
+          lngLow: boundingBox[2],
+          lngHigh: boundingBox[3],
+        });
+      }
+    },
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     if (location === "Map Area") return;
@@ -67,9 +85,15 @@ export const Map = ({
     setTimeout(() => {
       const newRegion: Region = {
         latitude: properties[index].lat,
-        latitudeDelta: region?.latitudeDelta ? region.latitudeDelta : 0.4,
+        latitudeDelta:
+          region?.latitudeDelta && region.latitudeDelta < 4
+            ? region.latitudeDelta
+            : 4,
         longitude: properties[index].lng,
-        longitudeDelta: region?.longitudeDelta ? region.longitudeDelta : 0.4,
+        longitudeDelta:
+          region?.longitudeDelta && region.longitudeDelta < 4
+            ? region.longitudeDelta
+            : 4,
       };
 
       setRegion(newRegion);
@@ -80,7 +104,7 @@ export const Map = ({
   };
 
   const handleSearchAreaButtonPress = () => {
-    setProperties(getPropertiesInArea(boundingBox));
+    searchProperties.refetch();
     setLocation("Map Area");
     mapRegion = region;
     setShowSearchAreaButton(false);
@@ -110,19 +134,20 @@ export const Map = ({
           }
         }}
       >
-        {properties.map((i, index) => (
-          <MapMarker
-            key={i.ID}
-            lat={i.lat}
-            lng={i.lng}
-            color={
-              activeIndex === index
-                ? theme["color-info-400"]
-                : theme["color-primary-500"]
-            }
-            onPress={() => handleMarkerPress(index)}
-          />
-        ))}
+        {properties &&
+          properties.map((i, index) => (
+            <MapMarker
+              key={i.ID}
+              lat={i.lat}
+              lng={i.lng}
+              color={
+                activeIndex === index
+                  ? theme["color-info-400"]
+                  : theme["color-primary-500"]
+              }
+              onPress={() => handleMarkerPress(index)}
+            />
+          ))}
       </MapView>
       {activeIndex > -1 && (
         <>
@@ -171,7 +196,6 @@ const styles = StyleSheet.create({
   card: {
     position: "absolute",
     bottom: 10,
-    height: 360,
   },
   exit: {
     backgroundColor: "#fff",

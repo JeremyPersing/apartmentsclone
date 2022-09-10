@@ -39,6 +39,7 @@ export const endpoints = {
   createProperty: propertyEndpoint + "/create",
   getPropertyByID: propertyEndpoint + "/",
   getPropertiesByUserID: propertyEndpoint + "/userid/",
+  getPropertiesByBoundingBox: propertyEndpoint + "/search",
   deleteProperty: propertyEndpoint + "/",
   updateProperty: propertyEndpoint + "/update/",
   getApartmentsByPropertyID: apartmentEndpoint + "/property/",

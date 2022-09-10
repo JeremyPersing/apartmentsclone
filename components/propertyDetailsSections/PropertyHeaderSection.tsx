@@ -32,10 +32,12 @@ export const PropertyHeaderSection = ({ property }: { property: Property }) => {
 
   return (
     <>
-      <Text category={"h5"} style={styles.defaultMarginVertical}>
-        {property.name}
-      </Text>
-      <Row style={styles.containerRow}>
+      {property.name ? (
+        <Text category={"h5"} style={styles.defaultMarginTop}>
+          {property.name}
+        </Text>
+      ) : null}
+      <Row style={[styles.containerRow, styles.defaultMarginTop]}>
         <View>
           <Text category={"c1"}>{property.street}</Text>
           <Text category={"c1"}>{`${property.city}, ${getStateAbbreviation(
@@ -74,4 +76,5 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginTop: -4,
   },
+  defaultMarginTop: { marginTop: 10 },
 });

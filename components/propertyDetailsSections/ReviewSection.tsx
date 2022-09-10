@@ -11,7 +11,7 @@ export const ReviewSection = ({ property }: { property: Property }) => {
       <Text category={"h5"} style={styles.defaultMarginVertical}>
         Reviews
       </Text>
-      {property.rentLow ? (
+      {property.reviews ? (
         <>
           <OverallReviewScoreCard
             numberOfReviews={property.reviews ? property.reviews.length : 0}
@@ -27,7 +27,9 @@ export const ReviewSection = ({ property }: { property: Property }) => {
             renderItem={({ item }) => <ReviewCard review={item} />}
           />
         </>
-      ) : null}
+      ) : (
+        <Text>No reviews yet. Be the first one to review this property.</Text>
+      )}
 
       <Button
         onPress={() => console.log("navigate to the review screen")}

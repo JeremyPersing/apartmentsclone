@@ -9,14 +9,19 @@ import { Property } from "../../types/property";
 import { callPhoneNumber } from "../../utils/callPhoneNumber";
 import { openURL } from "../../utils/openURL";
 
-const formatPhoneNumber = (str: string) => {
+const formatPhoneNumber = (str: string, callingCode: string) => {
   let cleaned = ("" + str).replace(/\D/g, "");
   let match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
   if (match) {
-    //Remove the matched extension code
-    //Change this to format for any country code.
-    let intlCode = match[1] ? "+1 " : "";
-    return [intlCode, "(", match[2], ") ", match[3], "-", match[4]].join("");
+    return [
+      `+${callingCode} `,
+      "(",
+      match[2],
+      ") ",
+      match[3],
+      "-",
+      match[4],
+    ].join("");
   }
   return "Give Us A Call";
 };
@@ -38,29 +43,31 @@ export const ContactSection = ({ property }: { property: Property }) => {
           />
 
           <Text category={"c1"} status={"info"} style={styles.rowText}>
-            {formatPhoneNumber(property.phoneNumber)}
+            {formatPhoneNumber(property.phoneNumber, property.callingCode)}
           </Text>
         </Row>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() =>
-          // can also use Linking.openURL but that takes you out of the app
-          {
-            openURL(property.website);
+      {property?.website ? (
+        <TouchableOpacity
+          onPress={() =>
+            // can also use Linking.openURL but that takes you out of the app
+            {
+              if (property.website) openURL(property.website);
+            }
           }
-        }
-      >
-        <Row style={styles.row}>
-          <MaterialCommunityIcons
-            name="web"
-            color={theme["color-info-500"]}
-            size={16}
-          />
-          <Text category={"c1"} status={"info"} style={styles.rowText}>
-            View Property Website
-          </Text>
-        </Row>
-      </TouchableOpacity>
+        >
+          <Row style={styles.row}>
+            <MaterialCommunityIcons
+              name="web"
+              color={theme["color-info-500"]}
+              size={16}
+            />
+            <Text category={"c1"} status={"info"} style={styles.rowText}>
+              View Property Website
+            </Text>
+          </Row>
+        </TouchableOpacity>
+      ) : null}
       <Row style={styles.buttonRow}>
         <Button
           style={styles.button}

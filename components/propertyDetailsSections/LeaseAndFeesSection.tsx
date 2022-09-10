@@ -6,14 +6,44 @@ import { Property } from "../../types/property";
 import { Row } from "../Row";
 import { PetCard } from "../PetCard";
 import { GeneralTextCard } from "../GeneralTextCard";
+import { CatsAndDogs, CatsOnly, DogsOnly } from "../../constants/petValues";
 
 export const LeaseAndFeesSection = ({ property }: { property: Property }) => {
+  const leaseLengths = [];
+  const leaseLengthExists = new Map<string, boolean>();
+
+  let minDeposit = property.apartments[0].deposit;
+  let maxDeposit = property.apartments[0].deposit;
+  for (let apartment of property.apartments) {
+    if (apartment.deposit > maxDeposit) maxDeposit = apartment.deposit;
+    if (apartment.deposit < minDeposit) minDeposit = apartment.deposit;
+
+    if (!leaseLengthExists.get(apartment.leaseLength)) {
+      leaseLengths.push(apartment.leaseLength);
+      leaseLengthExists.set(apartment.leaseLength, true);
+    }
+  }
+
+  let downDepositBody = [];
+  if (minDeposit === maxDeposit) downDepositBody.push(`$${minDeposit}`);
+  else {
+    downDepositBody.push(`Min: $${minDeposit}`);
+    downDepositBody.push(`Max: $${maxDeposit}`);
+  }
+
+  const getPetsAllowedText = () => {
+    if (property.petsAllowed === CatsAndDogs) return "Cats and Dogs Allowed";
+    if (property.petsAllowed === CatsOnly) return "Only Cats Allowed";
+    if (property.petsAllowed === DogsOnly) return "Only Dogs Allowed";
+    return "No Pets Allowed";
+  };
+
   return (
     <>
       <Text category={"h5"} style={styles.defaultMarginVertical}>
         Lease Detail & Fees
       </Text>
-      {property.pets ? (
+      {property.petsAllowed ? (
         <>
           <Row style={styles.row}>
             <MaterialIcons name="pets" color="black" size={24} />
@@ -21,26 +51,23 @@ export const LeaseAndFeesSection = ({ property }: { property: Property }) => {
               Pet Policies
             </Text>
           </Row>
-          <FlatList
-            style={styles.defaultMarginVertical}
-            horizontal
-            data={property.pets}
-            renderItem={({ item }) => (
-              <PetCard pet={item} style={styles.petCard} />
-            )}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.type}
+          <GeneralTextCard heading="Pets" body={[getPetsAllowedText()]} />
+        </>
+      ) : null}
+      {property.parkingFee ? (
+        <>
+          <Row style={styles.row}>
+            <MaterialIcons name="attach-money" color="black" size={24} />
+            <Text category={"h6"} style={styles.rowText}>
+              Fees
+            </Text>
+          </Row>
+          <GeneralTextCard
+            heading="parking"
+            body={[`${property.parkingFee}`]}
           />
         </>
       ) : null}
-
-      <Row style={styles.row}>
-        <MaterialIcons name="attach-money" color="black" size={24} />
-        <Text category={"h6"} style={styles.rowText}>
-          Fees
-        </Text>
-      </Row>
-      <GeneralTextCard heading="parking" body={["Other"]} />
 
       <Row style={[styles.row, { paddingTop: 10 }]}>
         <MaterialIcons name="list-alt" color="black" size={24} />
@@ -53,15 +80,11 @@ export const LeaseAndFeesSection = ({ property }: { property: Property }) => {
         data={[
           {
             heading: "lease options",
-            body: ["12 months"],
+            body: leaseLengths,
           },
           {
-            heading: "property information",
-            body: [
-              "Built in 2017",
-              "Apartment Community",
-              "242 units/5 stories",
-            ],
+            heading: "Down Deposit",
+            body: downDepositBody,
           },
         ]}
         horizontal
