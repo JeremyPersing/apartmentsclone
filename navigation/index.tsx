@@ -32,6 +32,7 @@ import { AddPropertyScreen } from "../screens/AddPropertyScreen";
 import { EditPropertyScreen } from "../screens/EditPropertyScreen";
 import { MyPropertiesScreen } from "../screens/MyPropertiesScreen";
 import { ManageUnitsScreen } from "../screens/ManageUnitsScreen";
+import { ReviewScreen } from "../screens/ReviewScreen";
 
 export default function Navigation({
   colorScheme,
@@ -114,6 +115,11 @@ function RootNavigator() {
         <Stack.Screen
           name="ManageUnits"
           component={ManageUnitsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Review"
+          component={ReviewScreen}
           options={{ headerShown: false }}
         />
       </Stack.Group>

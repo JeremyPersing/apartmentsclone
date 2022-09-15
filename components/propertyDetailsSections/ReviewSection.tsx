@@ -1,11 +1,15 @@
 import { FlatList, StyleSheet } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
+import { useNavigation } from "@react-navigation/native";
 
 import { Property } from "../../types/property";
 import { OverallReviewScoreCard } from "../OverallReviewScoreCard";
 import { ReviewCard } from "../ReviewCard";
+import { getStateAbbreviation } from "../../utils/getStateAbbreviation";
 
 export const ReviewSection = ({ property }: { property: Property }) => {
+  const { navigate } = useNavigation();
+
   return (
     <>
       <Text category={"h5"} style={styles.defaultMarginVertical}>
@@ -32,7 +36,16 @@ export const ReviewSection = ({ property }: { property: Property }) => {
       )}
 
       <Button
-        onPress={() => console.log("navigate to the review screen")}
+        onPress={() =>
+          navigate("Review", {
+            propertyID: property.ID,
+            propertyName: property?.name
+              ? property.name
+              : `${property.street}, ${getStateAbbreviation(property.state)}, ${
+                  property.zip
+                }`,
+          })
+        }
         style={styles.defaultMarginVertical}
       >
         Write a Review
