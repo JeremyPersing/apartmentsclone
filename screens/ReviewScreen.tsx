@@ -9,43 +9,27 @@ import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-import { endpoints } from "../constants";
-import { useAuth } from "../hooks/useAuth";
+import { endpoints, queryKeys } from "../constants";
+import { useUser } from "../hooks/useUser";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
 import { theme } from "../theme";
 import { Row } from "../components/Row";
 import { TouchableStarsContainer } from "../components/TouchableStarsContainer";
 import { useLoading } from "../hooks/useLoading";
+import { CreateReview } from "../types/review";
+import { useCreateReviewMutation } from "../hooks/mutations/useCreateReviewMutation";
 
 export const ReviewScreen = ({
   route,
 }: {
   route: { params: { propertyID: number; propertyName: string } };
 }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const navigation = useNavigation();
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
 
-  const createReview = useMutation(
-    (values: CreateReview) =>
-      axios.post(`${endpoints.createReview}${route.params.propertyID}`, values),
-    {
-      onMutate: () => {
-        setLoading(true);
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries("selectedproperty");
-      },
-      onError: () => {
-        alert("Unable to create review");
-      },
-      onSettled: () => {
-        setLoading(false);
-        navigation.goBack();
-      },
-    }
-  );
+  const createReview = useCreateReviewMutation();
 
   if (!user) return <SignUpOrSignInScreen />;
 
@@ -76,7 +60,10 @@ export const ReviewScreen = ({
                 userID: user.ID,
               };
 
-              createReview.mutate(createReviewObj);
+              createReview.mutate({
+                propertyID: route.params.propertyID,
+                review: createReviewObj,
+              });
             }}
           >
             {({
@@ -170,10 +157,3 @@ const styles = StyleSheet.create({
   },
   cancelButton: { borderColor: theme["color-primary-500"] },
 });
-
-type CreateReview = {
-  userID: number;
-  title: string;
-  body: string;
-  stars: number;
-};

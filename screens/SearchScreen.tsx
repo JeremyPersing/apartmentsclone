@@ -7,7 +7,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 import { Screen } from "../components/Screen";
-import { endpoints, HEADERHEIGHT } from "../constants";
+import { endpoints, HEADERHEIGHT, queryKeys } from "../constants";
 import { Card } from "../components/Card";
 import { AnimatedListHeader } from "../components/AnimatedListHeader";
 import { getPropertiesInArea } from "../data/properties";
@@ -15,6 +15,7 @@ import { Map } from "../components/Map";
 import { SearchScreenParams } from "../types";
 import { Property } from "../types/property";
 import { Text } from "@ui-kitten/components";
+import { useSearchPropertiesQuery } from "../hooks/queries/useSearchPropertiesQuery";
 
 export const SearchScreen = ({
   route,
@@ -26,29 +27,15 @@ export const SearchScreen = ({
   const [scrollAnimation] = useState(new Animated.Value(0));
   const mapRef = useRef<MapView | null>(null);
   const [location, setLocation] = useState<string | undefined>(undefined);
-  const searchProperties = useQuery(
-    "searchproperties",
-    () => {
-      if (route.params.boundingBox) {
-        const boundingBox = [
-          Number(route.params.boundingBox[0]),
-          Number(route.params.boundingBox[1]),
-          Number(route.params.boundingBox[2]),
-          Number(route.params.boundingBox[3]),
-        ];
-
-        return axios.post(`${endpoints.getPropertiesByBoundingBox}`, {
-          latLow: boundingBox[0],
-          latHigh: boundingBox[1],
-          lngLow: boundingBox[2],
-          lngHigh: boundingBox[3],
-        });
-      }
-    },
-    {
-      enabled: false,
-    }
-  );
+  let boundingBox: number[] = [];
+  if (route.params?.boundingBox)
+    boundingBox = [
+      Number(route.params.boundingBox[0]),
+      Number(route.params.boundingBox[1]),
+      Number(route.params.boundingBox[2]),
+      Number(route.params.boundingBox[3]),
+    ];
+  const searchProperties = useSearchPropertiesQuery(boundingBox);
 
   useEffect(() => {
     if (route.params) {
@@ -72,14 +59,12 @@ export const SearchScreen = ({
         mapShown={mapShown}
         location={location ? location : "Find a Location"}
         availableProperties={
-          searchProperties.data?.data
-            ? searchProperties.data?.data.length
-            : undefined
+          searchProperties.data ? searchProperties.data.length : undefined
         }
       />
       {mapShown ? (
         <Map
-          properties={searchProperties.data?.data}
+          properties={searchProperties?.data ? searchProperties.data : []}
           mapRef={mapRef}
           location={location ? location : "Find a Location"}
           setLocation={setLocation}
@@ -96,7 +81,7 @@ export const SearchScreen = ({
         />
       ) : (
         <>
-          {searchProperties.data && searchProperties.data?.data.length > 0 ? (
+          {searchProperties.data && searchProperties.data?.length > 0 ? (
             <Animated.FlatList
               onScroll={Animated.event(
                 [
@@ -113,7 +98,7 @@ export const SearchScreen = ({
               contentContainerStyle={{ paddingTop: HEADERHEIGHT - 20 }}
               bounces={false}
               scrollEventThrottle={16}
-              data={searchProperties.data?.data}
+              data={searchProperties?.data}
               keyExtractor={(item) => item.ID.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (

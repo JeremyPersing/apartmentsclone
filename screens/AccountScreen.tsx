@@ -6,10 +6,10 @@ import { Screen } from "../components/Screen";
 import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { theme } from "../theme";
 import { ButtonList } from "../components/ButtonList";
-import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 
 export const AccountScreen = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useUser();
   const navigation = useNavigation();
 
   const firstSignedOutButtons = [

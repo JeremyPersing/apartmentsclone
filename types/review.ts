@@ -9,3 +9,10 @@ export type Review = {
   body: string;
   stars: number;
 };
+
+export type CreateReview = {
+  userID: number;
+  title: string;
+  body: string;
+  stars: number;
+};

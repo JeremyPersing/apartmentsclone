@@ -48,8 +48,8 @@ export const AnimatedListHeader = ({
   );
 
   const navbarTranslate = clampedScroll.interpolate({
-    inputRange: [0, HEADERHEIGHT],
-    outputRange: [0, -HEADERHEIGHT],
+    inputRange: availableProperties && !mapShown ? [0, HEADERHEIGHT] : [0, 0],
+    outputRange: availableProperties && !mapShown ? [0, -HEADERHEIGHT] : [0, 0],
     extrapolate: "clamp",
   });
 

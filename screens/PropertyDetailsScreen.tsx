@@ -15,23 +15,22 @@ import { AmentitiesSection } from "../components/propertyDetailsSections/Ameniti
 import { LeaseAndFeesSection } from "../components/propertyDetailsSections/LeaseAndFeesSection";
 import { LocationSection } from "../components/propertyDetailsSections/LocationSection";
 import { ReviewSection } from "../components/propertyDetailsSections/ReviewSection";
-import { endpoints } from "../constants";
+import { endpoints, queryKeys } from "../constants";
+import { useSelectedPropertyQuery } from "../hooks/queries/useSelectedPropertyQuery";
 
 export const PropertyDetailsScreen = ({
   route,
 }: {
   route: { params: { propertyID: number } };
 }) => {
-  const property = useQuery("selectedproperty", () => {
-    return axios.get(`${endpoints.getPropertyByID}${route.params.propertyID}`);
-  });
+  const property = useSelectedPropertyQuery(route.params.propertyID);
 
-  if (!property.data?.data) return <Text>Unable to get property ...</Text>;
+  if (!property.data) return <Text>Unable to get property ...</Text>;
 
   return (
     <Screen>
       <FlatList
-        data={[property.data.data]}
+        data={[property.data]}
         keyExtractor={(item) => item.ID.toString()}
         renderItem={({ item }) => (
           <>

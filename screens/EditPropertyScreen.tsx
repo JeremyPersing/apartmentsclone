@@ -22,8 +22,9 @@ import {
   DESCRIPTION_STR,
   endpoints,
   PHOTOS_STR,
+  queryKeys,
 } from "../constants";
-import { Property } from "../types/property";
+import { EditPropertyObj, Property } from "../types/property";
 import { bedValues } from "../constants/bedValues";
 import { bathValues } from "../constants/bathValues";
 import { theme } from "../theme";
@@ -36,48 +37,26 @@ import { UtilitiesAndAmenities } from "../components/editPropertySections/Utilit
 import { petValues } from "../constants/petValues";
 import { laundryValues } from "../constants/laundryValues";
 import { ContactInfo } from "../components/editPropertySections/ContactInfo";
-import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 import { TempApartment } from "../types/tempApartment";
 import { useLoading } from "../hooks/useLoading";
+import { useEditPropertyQuery } from "../hooks/queries/useEditPropertyQuery";
+import { useEditPropertyMutation } from "../hooks/mutations/useEditPropertyMutation";
 
 export const EditPropertyScreen = ({
   route,
 }: {
   route: { params: { propertyID: number } };
 }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const scrollViewRef = useRef<KeyboardAwareScrollView | null>(null);
-  const property: UseQueryResult<{ data: Property }, unknown> = useQuery(
-    "property",
-    () => axios.get(endpoints.getPropertyByID + route.params.propertyID)
-  );
+  const property = useEditPropertyQuery(route.params.propertyID);
+  const editProperty = useEditPropertyMutation();
   const phoneRef = useRef<RNPhoneInput>(null);
-  const propertyData = property.data?.data;
+  const propertyData = property.data;
 
   const [showAlternateScreen, setShowAlternateScreen] = useState("");
   const [apartmentIndex, setApartmentIndex] = useState<number>(-1);
-  const { setLoading } = useLoading();
-  const navigation = useNavigation();
-  const queryClient = useQueryClient();
-
-  const editProperty = useMutation(
-    (obj: EditPropertyObj) =>
-      axios.patch(`${endpoints.updateProperty}${route.params.propertyID}`, obj),
-    {
-      onMutate: () => {
-        setLoading(true);
-      },
-      onError(err) {
-        setLoading(false);
-        alert("Error updating property");
-      },
-      onSuccess() {
-        queryClient.invalidateQueries("myproperties");
-        setLoading(false);
-        navigation.goBack();
-      },
-    }
-  );
 
   const handleShowAlternateScreen = (index: number, name: string) => {
     // When there are multiple unit, we dont want to be
@@ -214,7 +193,7 @@ export const EditPropertyScreen = ({
                 website: values.website,
               };
 
-              editProperty.mutate(obj);
+              editProperty.mutate({ obj, propertyID: route.params.propertyID });
             }}
           >
             {({
@@ -424,25 +403,3 @@ const validationSchema = yup.object().shape({
   website: yup.string().url(),
   onMarket: yup.boolean().required(),
 });
-
-type EditPropertyObj = {
-  ID?: number;
-  unitType?: "single" | "multiple";
-  apartments: TempApartment[];
-  description: string;
-  images: string[];
-  includedUtilities: string[];
-  petsAllowed: string;
-  laundryType: string;
-  parkingFee: number;
-  amenities: string[];
-  name: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  callingCode?: string;
-  countryCode?: string;
-  phoneNumber: string;
-  website: string;
-  onMarket: boolean;
-};

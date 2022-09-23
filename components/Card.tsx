@@ -17,10 +17,11 @@ import axios from "axios";
 import { Property } from "../types/property";
 import { ImageCarousel } from "./ImageCarousel";
 import { CardInformation } from "./CardInformation";
-import { LISTMARGIN } from "../constants";
+import { LISTMARGIN, queryKeys } from "../constants";
 import { theme } from "../theme";
 import { endpoints } from "../constants";
 import { useLoading } from "../hooks/useLoading";
+import { useDeletePropertyMutation } from "../hooks/mutations/useDeletePropertyMutation";
 
 export const Card = ({
   property,
@@ -33,46 +34,11 @@ export const Card = ({
   myProperty?: boolean;
   style?: ViewStyle;
 }) => {
-  const { setLoading } = useLoading();
-  const queryClient = useQueryClient();
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-  const deleteProperty = useMutation(
-    () => axios.delete(`${endpoints.deleteProperty}${property.ID}`),
-    {
-      onMutate: async () => {
-        setLoading(true);
-        await queryClient.cancelQueries("myproperties");
-
-        const prevProperties: { data: Property[] } | undefined =
-          queryClient.getQueryData("myproperties");
-
-        if (prevProperties) {
-          const filtered = prevProperties.data.filter(
-            (i) => i.ID !== property.ID
-          );
-
-          queryClient.setQueryData("myproperties", filtered);
-        }
-
-        return { prevProperties };
-      },
-      onError: (err, newTodo, context) => {
-        setLoading(false);
-        if (context?.prevProperties)
-          queryClient.setQueryData(
-            "myproperties",
-            context?.prevProperties.data
-          );
-      },
-      onSettled: () => {
-        setLoading(false);
-        queryClient.invalidateQueries("myproperties");
-      },
-    }
-  );
+  const deleteProperty = useDeletePropertyMutation();
 
   const handleEditProperty = () => {
     navigation.navigate("EditProperty", { propertyID: property.ID });
@@ -80,7 +46,7 @@ export const Card = ({
   };
 
   const handleDeleteProperty = () => {
-    deleteProperty.mutate();
+    deleteProperty.mutate({ propertyID: property.ID });
     closeModal();
   };
 

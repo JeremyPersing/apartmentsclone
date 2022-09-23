@@ -10,10 +10,13 @@ export const AmentitiesSection = ({ property }: { property: Property }) => {
   const apartmentsAmenities = [];
   const amenityExists = new Map<string, boolean>();
   for (let apartment of property.apartments) {
-    for (let amenity of apartment.amenities) {
-      if (!amenityExists.get(amenity)) {
-        apartmentsAmenities.push(amenity);
-        amenityExists.set(amenity, true);
+    if (apartment?.amenities) {
+      console.log("Apartment amenities", apartment.amenities);
+      for (let amenity of apartment.amenities) {
+        if (!amenityExists.get(amenity)) {
+          apartmentsAmenities.push(amenity);
+          amenityExists.set(amenity, true);
+        }
       }
     }
   }

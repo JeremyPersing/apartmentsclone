@@ -2,6 +2,7 @@ import { Apartment } from "./apartment";
 import { Review } from "./review";
 import { Pet } from "./pet";
 import { Score } from "./score";
+import { TempApartment } from "./tempApartment";
 
 export type Property = {
   ID: number;
@@ -36,6 +37,7 @@ export type Property = {
   firstName: string;
   lastName: string;
   email: string;
+  liked?: boolean;
 };
 
 export type CreateProperty = {
@@ -55,4 +57,26 @@ export type CreateProperty = {
     active: boolean;
     availableOn: Date;
   }[];
+};
+
+export type EditPropertyObj = {
+  ID?: number;
+  unitType?: "single" | "multiple";
+  apartments: TempApartment[];
+  description: string;
+  images: string[];
+  includedUtilities: string[];
+  petsAllowed: string;
+  laundryType: string;
+  parkingFee: number;
+  amenities: string[];
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  callingCode?: string;
+  countryCode?: string;
+  phoneNumber: string;
+  website: string;
+  onMarket: boolean;
 };

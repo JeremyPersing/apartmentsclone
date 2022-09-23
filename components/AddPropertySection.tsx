@@ -6,9 +6,6 @@ import { useState } from "react";
 import { PickerItem } from "react-native-woodpicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as yup from "yup";
-import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import { useNavigation, StackActions } from "@react-navigation/native";
 
 import { Screen } from "./Screen";
 import { ModalHeader } from "./ModalHeader";
@@ -19,36 +16,18 @@ import { SearchAddress } from "./SearchAddress";
 import { getStateAbbreviation } from "../utils/getStateAbbreviation";
 import { Select } from "./Select";
 import { theme } from "../theme";
-import { CreateProperty, Property } from "../types/property";
-import { endpoints } from "../constants";
-import { useAuth } from "../hooks/useAuth";
+import { CreateProperty } from "../types/property";
+import { useUser } from "../hooks/useUser";
 import { bedValues } from "../constants/bedValues";
 import { bathValues } from "../constants/bathValues";
+import { useCreatePropertyMutation } from "../hooks/mutations/useCreatePropertyMutation";
 
 export const AddPropertySection = () => {
-  const { user } = useAuth();
-  const navigation = useNavigation();
+  const { user } = useUser();
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchLocation[]>([]);
-  const queryClient = useQueryClient();
 
-  const createProperty = useMutation(
-    "property",
-    async (obj: CreateProperty) => {
-      return axios.post<Property>(endpoints.createProperty, obj);
-    },
-    {
-      onError() {
-        alert("Unable to create property");
-      },
-      onSuccess(data: { data: Property }) {
-        queryClient.invalidateQueries("myproperties");
-        navigation.dispatch(
-          StackActions.replace("EditProperty", { propertyID: data.data.ID })
-        );
-      },
-    }
-  );
+  const createProperty = useCreatePropertyMutation();
 
   const onSubmit = (values: {
     unitType: string;

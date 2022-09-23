@@ -27,6 +27,7 @@ const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
 const apartmentEndpoint = serverUrl + apartment;
 const reviewEndpoint = serverUrl + review;
+const savedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/saved`;
 
 export const endpoints = {
   autoComplete: locationEndpoint + "/autocomplete",
@@ -47,4 +48,15 @@ export const endpoints = {
   getApartmentsByPropertyID: apartmentEndpoint + "/property/",
   updateApartments: apartmentEndpoint + "/property/",
   createReview: reviewEndpoint + "/property/",
+  getSavedPropertiesByUserID: savedEndpoint,
+  alterSavedPropertiesByUserID: savedEndpoint,
+};
+
+export const queryKeys = {
+  searchProperties: "searchProperties",
+  selectedProperty: "selectedProperty",
+  savedProperties: "savedProperties",
+  myProperties: "myProperties",
+  editProperty: "editProperty",
+  apartments: "apartments",
 };

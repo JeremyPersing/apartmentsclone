@@ -1,30 +1,22 @@
 import { StyleSheet, FlatList, View } from "react-native";
 import { Text, Button } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "react-query";
-import axios from "axios";
 import LottieView from "lottie-react-native";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Screen } from "../components/Screen";
-import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
-import { Property } from "../types/property";
-import { endpoints } from "../constants";
 import { Loading } from "../components/Loading";
 import { Card } from "../components/Card";
 import { ModalHeader } from "../components/ModalHeader";
 import { theme } from "../theme";
+import { useMyPropertiesQuery } from "../hooks/queries/useMyPropertiesQuery";
 
 export const MyPropertiesScreen = () => {
   const navigation = useNavigation();
-  const { user } = useAuth();
-  const properties = useQuery("myproperties", async () => {
-    if (user)
-      return axios.get<Property[]>(
-        `${endpoints.getPropertiesByUserID}${user.ID}`
-      );
-  });
+  const { user } = useUser();
+  const properties = useMyPropertiesQuery();
 
   const addPropertyNavigation = () => {
     navigation.navigate("AddProperty");
@@ -32,11 +24,11 @@ export const MyPropertiesScreen = () => {
 
   if (!user) return <SignUpOrSignInScreen />;
 
-  if (properties.isLoading || properties.isFetching) return <Loading />;
+  if (properties.isLoading) return <Loading />;
 
   return (
     <Screen>
-      {properties.data?.data && properties.data?.data.length > 0 ? (
+      {properties?.data && properties.data.length > 0 ? (
         <FlatList
           ListHeaderComponent={
             <>
@@ -72,7 +64,7 @@ export const MyPropertiesScreen = () => {
               </Button>
             </>
           }
-          data={properties.data.data}
+          data={properties.data}
           renderItem={({ item }) => (
             <Card
               style={styles.card}

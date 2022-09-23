@@ -4,34 +4,27 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
-import { useMutation } from "react-query";
-import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
-import { Loading } from "../components/Loading";
-import { endpoints } from "../constants";
+import { useLoading } from "../hooks/useLoading";
+import { forgotPassword } from "../services/user";
 
 export const ForgotPasswordScreen = () => {
   const [emailSent, setEmailSent] = useState(false);
+  const { setLoading } = useLoading();
 
-  const forgotPassword = useMutation(
-    async (email: string) => {
-      return axios.post(endpoints.forgotPassword, {
-        email,
-      });
-    },
-    {
-      onSuccess(data) {
-        if (data.data.emailSent) setEmailSent(true);
-      },
-      onError(error: any) {
-        alert(error?.response.data.detail);
-      },
+  const handleSubmit = async (values: { email: string }) => {
+    try {
+      setLoading(true);
+      const emailSent = await forgotPassword(values.email);
+      if (emailSent?.emailSent) setEmailSent(true);
+    } catch (error) {
+      alert("Error placing email");
+    } finally {
+      setLoading(false);
     }
-  );
-
-  if (forgotPassword.isLoading) return <Loading />;
+  };
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -64,9 +57,7 @@ export const ForgotPasswordScreen = () => {
               validationSchema={yup.object().shape({
                 email: yup.string().email().required("Your email is required."),
               })}
-              onSubmit={(values) => {
-                forgotPassword.mutate(values.email);
-              }}
+              onSubmit={handleSubmit}
             >
               {({
                 values,

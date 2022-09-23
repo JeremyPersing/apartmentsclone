@@ -13,7 +13,7 @@ import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
 import { PhoneInput } from "../components/PhoneInput";
 import { endpoints } from "../constants";
-import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 import { Loading } from "../components/Loading";
 
 export const CreateManagerScreen = ({
@@ -23,7 +23,7 @@ export const CreateManagerScreen = ({
 }) => {
   const [imageURI, setImageURI] = useState("");
   const phoneRef = useRef<RNPhoneInput>(null);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   const pickImage = async (
     setBase64Image: (field: string, value: any) => void,

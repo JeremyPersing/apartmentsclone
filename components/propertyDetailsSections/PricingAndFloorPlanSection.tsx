@@ -166,7 +166,7 @@ export const PricingAndFloorPlanSection = ({
                   {i.unit}:
                 </Text>
                 <Text category={"c1"} style={styles.layeredText}>
-                  ${i.rent.toLocaleString("en-US")}
+                  {i?.rent ? `$${i.rent.toLocaleString("en-US")}` : "N/A"}
                 </Text>
                 <Text category={"c1"} style={styles.layeredText}>
                   {i.sqFt.toLocaleString("en-US")}

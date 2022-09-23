@@ -2,7 +2,7 @@ import { View, StyleSheet, FlatList } from "react-native";
 import { Button, Text } from "@ui-kitten/components";
 import { useState } from "react";
 import LottieView from "lottie-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { Screen } from "../components/Screen";
 import { Row } from "../components/Row";
@@ -11,15 +11,29 @@ import { properties } from "../data/properties";
 import { Card } from "../components/Card";
 import { Property } from "../types/property";
 import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
-import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
+import { Loading } from "../components/Loading";
+import { useSavedPropertiesQuery } from "../hooks/queries/useSavedPropertiesQuery";
 
 export const SavedScreen = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const { user } = useAuth();
+  const { user } = useUser();
   const navigation = useNavigation();
-  const likedProperties = properties;
+  const savedProperties = useSavedPropertiesQuery();
   const contactedProperties = undefined;
   const applicationProperties = undefined;
+
+  // Refetching saved properties doesn't occur after login
+  useFocusEffect(() => {
+    if (
+      (!savedProperties.data || savedProperties.data.length === 0) &&
+      user &&
+      user?.savedProperties &&
+      user.savedProperties.length > 0
+    ) {
+      savedProperties.refetch();
+    }
+  });
 
   const getButtonAppearance = (buttonIndex: number) => {
     if (activeIndex === buttonIndex) return "filled";
@@ -29,6 +43,8 @@ export const SavedScreen = () => {
   const handleButtonPress = (index: number) => {
     setActiveIndex(index);
   };
+
+  if (savedProperties.isLoading) return <Loading />;
 
   const getBodyText = (heading: string, subHeading: string) => {
     return (
@@ -65,7 +81,8 @@ export const SavedScreen = () => {
 
   const getBody = () => {
     if (activeIndex === 0) {
-      if (likedProperties) return getPropertiesFlatList(likedProperties);
+      if (savedProperties?.data && savedProperties.data.length > 0)
+        return getPropertiesFlatList(savedProperties.data);
       return (
         <>
           <LottieView

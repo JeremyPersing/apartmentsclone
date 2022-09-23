@@ -4,10 +4,6 @@ import { Text, Input, Button } from "@ui-kitten/components";
 import * as yup from "yup";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
-import { useMutation } from "react-query";
-import * as Facebook from "expo-auth-session/providers/facebook";
-import * as Google from "expo-auth-session/providers/google";
-import * as AppleAuthentication from "expo-apple-authentication";
 
 import { Screen } from "../components/Screen";
 import { ModalHeader } from "../components/ModalHeader";
@@ -16,91 +12,11 @@ import { FacebookButton } from "../components/FacebookButton";
 import { AppleButton } from "../components/AppleButton";
 import { PasswordInput } from "../components/PasswordInput";
 import { OrDivider } from "../components/OrDivider";
-import {
-  appleLoginOrRegister,
-  facebookLoginOrRegister,
-  googleLoginOrRegister,
-  loginUser,
-} from "../services/user";
 import { useAuth } from "../hooks/useAuth";
-import { Loading } from "../components/Loading";
 
 export const SignInScreen = () => {
   const navigation = useNavigation();
-  const { login } = useAuth();
-
-  const [_, __, googlePromptAsync] = Google.useAuthRequest({
-    expoClientId:
-      "974074584499-unf9vgjb47j4bsccejqi4ekj110c47nf.apps.googleusercontent.com",
-    iosClientId: "GOOGLE_GUID.apps.googleusercontent.com",
-    androidClientId: "GOOGLE_GUID.apps.googleusercontent.com",
-    webClientId: "GOOGLE_GUID.apps.googleusercontent.com",
-  });
-
-  const [___, ____, fbPromptAsync] = Facebook.useAuthRequest({
-    clientId: "723313165600806",
-  });
-
-  const nativeLogin = useMutation(
-    async (values: { email: string; password: string }) => {
-      const user = await loginUser(values.email, values.password);
-      if (user) {
-        login(user);
-        navigation.goBack();
-      }
-    }
-  );
-
-  const facebookLogin = useMutation(async () => {
-    const response = await fbPromptAsync();
-    if (response.type === "success") {
-      const { access_token } = response.params;
-
-      const user = await facebookLoginOrRegister(access_token);
-      if (user) {
-        login(user);
-        navigation.goBack();
-      }
-    }
-  });
-
-  const googleLogin = useMutation(async () => {
-    const response = await googlePromptAsync();
-    if (response.type === "success") {
-      const { access_token } = response.params;
-
-      const user = await googleLoginOrRegister(access_token);
-      if (user) {
-        login(user);
-        navigation.goBack();
-      }
-    }
-  });
-
-  const appleLogin = useMutation(async () => {
-    const { identityToken } = await AppleAuthentication.signInAsync({
-      requestedScopes: [
-        AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-      ],
-    });
-
-    if (identityToken) {
-      const user = await appleLoginOrRegister(identityToken);
-      if (user) {
-        login(user);
-        navigation.goBack();
-      }
-    }
-  });
-
-  if (
-    nativeLogin.isLoading ||
-    facebookLogin.isLoading ||
-    googleLogin.isLoading ||
-    appleLogin.isLoading
-  )
-    return <Loading />;
+  const { nativeLogin, facebookAuth, googleAuth, appleAuth } = useAuth();
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -119,8 +35,8 @@ export const SignInScreen = () => {
               email: yup.string().email().required("Your email is required."),
               password: yup.string().required("A password is required."),
             })}
-            onSubmit={(values) => {
-              nativeLogin.mutate(values);
+            onSubmit={async (values) => {
+              await nativeLogin(values);
             }}
           >
             {({
@@ -187,16 +103,16 @@ export const SignInScreen = () => {
                   <GoogleButton
                     text="Continue with Google"
                     style={styles.button}
-                    onPress={() => googleLogin.mutate()}
+                    onPress={async () => await googleAuth()}
                   />
                   <FacebookButton
                     text="Continue with Facebook"
                     style={styles.button}
-                    onPress={() => facebookLogin.mutate()}
+                    onPress={async () => await facebookAuth()}
                   />
                   <AppleButton
                     type="sign-in"
-                    onPress={() => appleLogin.mutate()}
+                    onPress={async () => await appleAuth()}
                   />
                 </>
               );
