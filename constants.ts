@@ -28,6 +28,9 @@ const propertyEndpoint = serverUrl + property;
 const apartmentEndpoint = serverUrl + apartment;
 const reviewEndpoint = serverUrl + review;
 const savedEndpoint = (id: number) => `${userEndpoint}/${id}/properties/saved`;
+const pushTokenEndpoint = (id: number) => `${userEndpoint}/${id}/pushtoken`;
+const allowsNotificationsEndpoint = (id: number) =>
+  `${userEndpoint}/${id}/settings/notifications`;
 
 export const endpoints = {
   autoComplete: locationEndpoint + "/autocomplete",
@@ -50,6 +53,8 @@ export const endpoints = {
   createReview: reviewEndpoint + "/property/",
   getSavedPropertiesByUserID: savedEndpoint,
   alterSavedPropertiesByUserID: savedEndpoint,
+  alterPushToken: pushTokenEndpoint,
+  allowsNotifications: allowsNotificationsEndpoint,
 };
 
 export const queryKeys = {

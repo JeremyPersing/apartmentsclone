@@ -5,6 +5,7 @@ import { ApplicationProvider } from "@ui-kitten/components";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useState, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
+import { LogBox } from "react-native";
 
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -14,6 +15,7 @@ import { AuthContext, LoadingContext } from "./context";
 import { User } from "./types/user";
 
 const queryClient = new QueryClient();
+LogBox.ignoreAllLogs();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

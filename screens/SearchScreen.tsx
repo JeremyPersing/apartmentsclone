@@ -3,8 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import MapView from "react-native-maps";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "react-query";
-import axios from "axios";
 
 import { Screen } from "../components/Screen";
 import { endpoints, HEADERHEIGHT, queryKeys } from "../constants";
@@ -62,6 +60,7 @@ export const SearchScreen = ({
           searchProperties.data ? searchProperties.data.length : undefined
         }
       />
+
       {mapShown ? (
         <Map
           properties={searchProperties?.data ? searchProperties.data : []}

@@ -10,6 +10,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import { ColorSchemeName, Pressable } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useEffect } from "react";
+import * as Notifications from "expo-notifications";
 
 import { AccountScreen } from "../screens/AccountScreen";
 import { SavedScreen } from "../screens/SavedScreen";
@@ -21,6 +23,7 @@ import { ForgotPasswordScreen } from "../screens/ForgotPasswordScreen";
 import { ResetPasswordScreen } from "../screens/ResetPasswordScreen";
 import { MessageScreen } from "../screens/MessageScreen";
 import {
+  AccountTabParamList,
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
@@ -33,6 +36,8 @@ import { EditPropertyScreen } from "../screens/EditPropertyScreen";
 import { MyPropertiesScreen } from "../screens/MyPropertiesScreen";
 import { ManageUnitsScreen } from "../screens/ManageUnitsScreen";
 import { ReviewScreen } from "../screens/ReviewScreen";
+import { useNotifications } from "../hooks/useNotifications";
+import { AccountSettingsScreen } from "../screens/AccountSettingsScreen";
 
 export default function Navigation({
   colorScheme,
@@ -53,6 +58,30 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const { registerForPushNotificationsAsync, handleNotificationResponse } =
+    useNotifications();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener(
+        handleNotificationResponse
+      );
+
+    return () => {
+      if (responseListener)
+        Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -162,10 +191,11 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="Account"
-        component={AccountScreen}
+        name="AccountRoot"
+        component={AccountStack}
         options={{
           headerShown: false,
+          tabBarLabel: "Account",
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="account-circle-outline" color={color} />
           ),
@@ -174,6 +204,25 @@ function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
+
+const AccountStackNavigator = createNativeStackNavigator<AccountTabParamList>();
+const AccountStack = () => (
+  <AccountStackNavigator.Navigator initialRouteName="Account">
+    <AccountStackNavigator.Screen
+      name="Account"
+      component={AccountScreen}
+      options={{ headerShown: false }}
+    />
+    <AccountStackNavigator.Screen
+      name="Settings"
+      component={AccountSettingsScreen}
+      options={{
+        headerTitle: "Account Settings",
+        headerBackTitle: "Back",
+      }}
+    />
+  </AccountStackNavigator.Navigator>
+);
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/

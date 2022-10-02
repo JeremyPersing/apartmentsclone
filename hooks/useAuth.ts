@@ -17,7 +17,7 @@ import { useLoading } from "./useLoading";
 export const useAuth = () => {
   const [_, __, googlePromptAsync] = Google.useAuthRequest({
     expoClientId:
-      "974074584499-unf9vgjb47j4bsccejqi4ekj110c47nf.apps.googleusercontent.com",
+      "1080382822276-eqklp58m1q9fl85m7aj89n1ofp8bdj7p.apps.googleusercontent.com",
     iosClientId: "GOOGLE_GUID.apps.googleusercontent.com",
     androidClientId: "GOOGLE_GUID.apps.googleusercontent.com",
     webClientId: "GOOGLE_GUID.apps.googleusercontent.com",

@@ -56,7 +56,13 @@ export const AccountScreen = () => {
   const accountButtons = [
     {
       label: "Account Settings",
-      onPress: () => console.log("navigate to Account Settings"),
+      onPress: () =>
+        navigation.navigate("Root", {
+          screen: "AccountRoot",
+          params: {
+            screen: "Settings",
+          },
+        }),
     },
     {
       label: "Billing History",
