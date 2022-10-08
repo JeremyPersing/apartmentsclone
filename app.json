@@ -17,7 +17,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jeremypersing.apartmentsclone"
     },
     "android": {
       "package": "com.jeremypersing.apartmentsclone",
@@ -29,6 +30,11 @@
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5bd09304-3926-421c-8f0a-ef37f783dbff"
+      }
     }
   }
 }
