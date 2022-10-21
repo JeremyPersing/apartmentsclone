@@ -72,6 +72,16 @@ export const AccountScreen = () => {
       label: "Banks and Cards",
       onPress: () => console.log("navigate to Banks and Cards"),
     },
+    {
+      label: "Messages",
+      onPress: () =>
+        navigation.navigate("Root", {
+          screen: "AccountRoot",
+          params: {
+            screen: "Conversations",
+          },
+        }),
+    },
   ];
 
   const rentalManagementButtons = [

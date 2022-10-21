@@ -24,7 +24,7 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   ResetPassword: { token: string };
   PropertyDetails: { propertyID: number };
-  Message: { propertyID: number; tour?: boolean };
+  MessageProperty: { propertyID: number; tour?: boolean };
   AddProperty: undefined;
   EditProperty: { propertyID: number };
   MyProperties: undefined;
@@ -44,6 +44,8 @@ export type RootTabParamList = {
 export type AccountTabParamList = {
   Account: undefined;
   Settings: undefined;
+  Conversations: undefined;
+  Messages: { conversationID: number; recipientName: string };
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

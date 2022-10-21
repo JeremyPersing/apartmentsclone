@@ -39,7 +39,6 @@ export const useNotifications = () => {
         throw new Error("User doesn't allow for notifications");
       }
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log("TOKEN", token);
 
       addPushToken(token);
       if (!user.allowsNotifications) setAllowsNotifications(true);

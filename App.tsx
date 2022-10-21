@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { useState, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import { LogBox } from "react-native";
+import * as Notifications from "expo-notifications";
 
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -13,6 +14,8 @@ import Navigation from "./navigation";
 import { theme } from "./theme";
 import { AuthContext, LoadingContext } from "./context";
 import { User } from "./types/user";
+import { socket } from "./constants/socket";
+import { queryKeys } from "./constants";
 
 const queryClient = new QueryClient();
 LogBox.ignoreAllLogs();
@@ -26,9 +29,75 @@ export default function App() {
   useEffect(() => {
     async function getUser() {
       const user = await SecureStore.getItemAsync("user");
-      if (user) setUser(JSON.parse(user));
+      if (user) {
+        const userObj = JSON.parse(user);
+        setUser(userObj);
+
+        socket.auth = {
+          userID: userObj.ID,
+          username:
+            userObj.firstName && userObj.lastName
+              ? `${userObj.firstName} ${userObj.lastName}`
+              : `${userObj.email}`,
+        };
+
+        socket.connect();
+      }
     }
-    getUser();
+    getUser().then(() => {
+      socket.on(
+        "getMessage",
+        (data: {
+          senderID: number;
+          senderName: string;
+          conversationID: number;
+          text: string;
+        }) => {
+          queryClient.invalidateQueries(queryKeys.conversations);
+          queryClient.invalidateQueries(queryKeys.selectedConversation);
+
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: data.senderName,
+              body: data.text,
+              data: {
+                // will need to change url in prod build (use process.ENV && eas.json)
+                url: `exp://192.168.30.24:19000/--/messages/${data.conversationID}/${data.senderName}`,
+              },
+            },
+            trigger: null,
+          });
+        }
+      );
+      socket.on("session", (data: { sessionID: string }) => {
+        socket.auth = { sessionID: data.sessionID };
+        if (user) {
+          const updatedUser = { ...user };
+          updatedUser.sessionID = data.sessionID;
+          setUser(updatedUser);
+          SecureStore.setItemAsync("user", JSON.stringify(updatedUser));
+        }
+      });
+
+      socket.on("connect_error", (err) => {
+        if (err.message === "Invalid userID" && user) {
+          socket.auth = {
+            userID: user?.ID,
+            username:
+              user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}`
+                : `${user.email}`,
+          };
+          socket.connect();
+        }
+      });
+    });
+
+    return () => {
+      socket.off("getMesssage");
+      socket.off("session");
+      socket.off("connect_error");
+    };
   }, []);
 
   if (!isLoadingComplete) {

@@ -14,8 +14,11 @@ import { useUser } from "../hooks/useUser";
 import { PressableInput } from "../components/PressableInput";
 import { useSelectedPropertyQuery } from "../hooks/queries/useSelectedPropertyQuery";
 import { SignUpOrSignInScreen } from "./SignUpOrSignInScreen";
+import { useConversationsQuery } from "../hooks/queries/useConversationsQuery";
+import { useCreateConversationMutation } from "../hooks/mutations/useCreateConversationMutation";
+import { Loading } from "../components/Loading";
 
-export const MessageScreen = ({
+export const MessagePropertyScreen = ({
   route,
 }: {
   route: { params: { propertyID: number; tour?: boolean } };
@@ -25,9 +28,59 @@ export const MessageScreen = ({
   const propertyQuery = useSelectedPropertyQuery(propertyID);
   const property = propertyQuery.data;
   const { user } = useUser();
+  const conversations = useConversationsQuery();
+  const createConversation = useCreateConversationMutation();
 
   if (!user) return <SignUpOrSignInScreen />;
   if (!property) return <Text>Unable to get property ...</Text>;
+  if (conversations.isLoading) return <Loading />;
+
+  const navigateToMessageScreen = (
+    conversationID: number,
+    recipientName: string
+  ) => {
+    navigation.navigate("Root", {
+      screen: "AccountRoot",
+      params: {
+        screen: "Messages",
+        initial: false, // won't render back button w/out set to false
+        params: {
+          conversationID,
+          recipientName,
+        },
+      },
+    });
+  };
+
+  if (conversations?.data && conversations.data.length > 0) {
+    const index = conversations.data.findIndex(
+      (i) => i.propertyID === route.params.propertyID
+    );
+    if (index >= 0) {
+      navigateToMessageScreen(
+        conversations.data[index].ID,
+        conversations.data[index].recipientName
+      );
+    }
+  }
+
+  const sendMessage = (text: string) => {
+    createConversation.mutate({
+      ownerID: property.userID,
+      propertyID: property.ID,
+      tenantID: user.ID,
+      propertyName: property.name
+        ? property.name
+        : `${property.street}, ${property.city}, ${getStateAbbreviation(
+            property.state
+          )}`,
+      senderName:
+        user.firstName && user.lastName
+          ? `${user.firstName} ${user.lastName}`
+          : `${user.email}`,
+      text,
+    });
+  };
 
   return (
     <KeyboardAwareScrollView bounces={false}>
@@ -73,8 +126,9 @@ export const MessageScreen = ({
             showCalendar: yup.bool(),
           })}
           onSubmit={(values) => {
-            console.log("send values", values);
-            navigation.goBack();
+            // Apartments.com uses a different approach to messaging, hence all the field
+            // names. In our implementation we will only need the messsage from values
+            sendMessage(values.message);
           }}
         >
           {({

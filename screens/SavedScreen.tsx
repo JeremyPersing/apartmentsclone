@@ -14,13 +14,14 @@ import { SignUpAndSignInButtons } from "../components/SignUpAndSignInButtons";
 import { useUser } from "../hooks/useUser";
 import { Loading } from "../components/Loading";
 import { useSavedPropertiesQuery } from "../hooks/queries/useSavedPropertiesQuery";
+import { useContactedPropertiesQuery } from "../hooks/queries/useContactedPropertiesQuery";
 
 export const SavedScreen = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const { user } = useUser();
   const navigation = useNavigation();
   const savedProperties = useSavedPropertiesQuery();
-  const contactedProperties = undefined;
+  const contactedProperties = useContactedPropertiesQuery();
   const applicationProperties = undefined;
 
   // Refetching saved properties doesn't occur after login
@@ -44,7 +45,8 @@ export const SavedScreen = () => {
     setActiveIndex(index);
   };
 
-  if (savedProperties.isLoading) return <Loading />;
+  if (savedProperties.isLoading || contactedProperties.isLoading)
+    return <Loading />;
 
   const getBodyText = (heading: string, subHeading: string) => {
     return (
@@ -103,8 +105,8 @@ export const SavedScreen = () => {
       );
     }
     if (activeIndex === 1) {
-      if (contactedProperties)
-        return getPropertiesFlatList(contactedProperties);
+      if (contactedProperties?.data && contactedProperties.data.length > 0)
+        return getPropertiesFlatList(contactedProperties.data);
       return (
         <>
           <LottieView

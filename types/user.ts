@@ -6,4 +6,5 @@ export type User = {
   savedProperties?: number[];
   allowsNotifications: boolean;
   pushToken?: string;
+  sessionID?: string;
 };

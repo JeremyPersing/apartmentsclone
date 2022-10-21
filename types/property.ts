@@ -37,6 +37,7 @@ export type Property = {
   firstName: string;
   lastName: string;
   email: string;
+  userID: number;
   liked?: boolean;
 };
 

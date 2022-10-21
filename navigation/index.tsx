@@ -21,7 +21,7 @@ import { SignInScreen } from "../screens/SignInScreen";
 import { SignUpScreen } from "../screens/SignUpScreen";
 import { ForgotPasswordScreen } from "../screens/ForgotPasswordScreen";
 import { ResetPasswordScreen } from "../screens/ResetPasswordScreen";
-import { MessageScreen } from "../screens/MessageScreen";
+import { MessagePropertyScreen } from "../screens/MessagePropertyScreen";
 import {
   AccountTabParamList,
   RootStackParamList,
@@ -38,6 +38,8 @@ import { ManageUnitsScreen } from "../screens/ManageUnitsScreen";
 import { ReviewScreen } from "../screens/ReviewScreen";
 import { useNotifications } from "../hooks/useNotifications";
 import { AccountSettingsScreen } from "../screens/AccountSettingsScreen";
+import { ConversationsScreen } from "../screens/ConversationsScreen";
+import { MessagesScreen } from "../screens/MessagesScreen";
 
 export default function Navigation({
   colorScheme,
@@ -122,8 +124,8 @@ function RootNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Message"
-          component={MessageScreen}
+          name="MessageProperty"
+          component={MessagePropertyScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -218,6 +220,18 @@ const AccountStack = () => (
       component={AccountSettingsScreen}
       options={{
         headerTitle: "Account Settings",
+        headerBackTitle: "Back",
+      }}
+    />
+    <AccountStackNavigator.Screen
+      name="Conversations"
+      component={ConversationsScreen}
+      options={{ headerTitle: "Conversations", headerBackTitle: "Back" }}
+    />
+    <AccountStackNavigator.Screen
+      name="Messages"
+      component={MessagesScreen}
+      options={{
         headerBackTitle: "Back",
       }}
     />

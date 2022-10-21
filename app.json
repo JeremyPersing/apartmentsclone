@@ -7,6 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "com.jeremypersing.apartmentsclone",
     "userInterfaceStyle": "automatic",
+    "plugins": ["expo-notifications"],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",

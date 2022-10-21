@@ -49,7 +49,7 @@ export const CardInformation = ({
     navigation.navigate("ManageUnits", { propertyID: property.ID });
 
   const emailNavigation = () =>
-    navigation.navigate("Message", { propertyID: property.ID });
+    navigation.navigate("MessageProperty", { propertyID: property.ID });
 
   const editPropertyNavigation = () =>
     navigation.navigate("EditProperty", { propertyID: property.ID });

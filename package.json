@@ -16,6 +16,7 @@
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
     "@expo/vector-icons": "^13.0.0",
+    "@flyerhq/react-native-chat-ui": "^1.4.3",
     "@react-native-community/datetimepicker": "6.1.2",
     "@react-native-picker/picker": "2.4.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
@@ -55,6 +56,7 @@
     "react-native-web": "0.17.7",
     "react-native-woodpicker": "^0.3.17",
     "react-query": "^3.39.1",
+    "socket.io-client": "^4.5.3",
     "yup": "^0.32.11"
   },
   "devDependencies": {

@@ -17,12 +17,20 @@ const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           Search: "search",
           Saved: "saved",
-          Account: "account",
+          AccountRoot: {
+            initialRouteName: "account" as any,
+            screens: {
+              Account: "account",
+              Settings: "settings",
+              Conversations: "conversations",
+              Messages: { path: "messages/:conversationID/:recipientName" },
+            },
+          },
         },
       },
       FindLocations: "findlocations",
       ForgotPassword: "forgotpassword",
-      Message: { path: "message/:propertyID" },
+      MessageProperty: { path: "messageproperty/:propertyID" },
       PropertyDetails: "propertydetails",
       ResetPassword: { path: "resetpassword/:token" },
       SignIn: "signin",
