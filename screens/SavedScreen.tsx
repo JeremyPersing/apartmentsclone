@@ -33,6 +33,7 @@ export const SavedScreen = () => {
       user.savedProperties.length > 0
     ) {
       savedProperties.refetch();
+      contactedProperties.refetch();
     }
   });
 

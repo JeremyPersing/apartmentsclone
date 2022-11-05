@@ -8,12 +8,18 @@ import { getStateAbbreviation } from "../../utils/getStateAbbreviation";
 import { useUser } from "../useUser";
 
 const fetchConversations = async (
-  userID?: number
+  userID?: number,
+  token?: string
 ): Promise<TransformedConversation[]> => {
   if (!userID) return [];
 
   const response = await axios.get(
-    `${endpoints.getConversationsByUserID}${userID}`
+    `${endpoints.getConversationsByUserID}${userID}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   const conversations: ConversationsRes[] = response.data;
@@ -46,9 +52,13 @@ const fetchConversations = async (
 export const useConversationsQuery = () => {
   const { user } = useUser();
 
-  return useQuery(queryKeys.conversations, () => fetchConversations(user?.ID), {
-    retry: false,
-  });
+  return useQuery(
+    queryKeys.conversations,
+    () => fetchConversations(user?.ID, user?.accessToken),
+    {
+      retry: false,
+    }
+  );
 };
 
 type ConversationsRes = {

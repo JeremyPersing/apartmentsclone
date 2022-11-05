@@ -53,9 +53,10 @@ export const useUser = () => {
       queryClient.clear();
       try {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        if (token) await alterPushToken(user?.ID, "remove", token);
+        if (token)
+          await alterPushToken(user?.ID, "remove", token, user.accessToken);
       } catch (error) {
-        setAndStoreUser(prevUser);
+        //setAndStoreUser(prevUser);
       }
     }
   };
@@ -78,7 +79,7 @@ export const useUser = () => {
       setAndStoreUser(updatedUser);
 
       try {
-        await alterPushToken(user.ID, "add", token);
+        await alterPushToken(user.ID, "add", token, user.accessToken);
       } catch (error) {
         setAndStoreUser(prevUser);
       }
@@ -93,7 +94,7 @@ export const useUser = () => {
       setAndStoreUser(updatedUser);
 
       try {
-        await alterAllowsNotifications(user.ID, allowed);
+        await alterAllowsNotifications(user.ID, allowed, user.accessToken);
       } catch (error) {
         console.error(error);
         setAndStoreUser(prevUser);

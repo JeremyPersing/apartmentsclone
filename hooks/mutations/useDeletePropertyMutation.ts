@@ -3,15 +3,22 @@ import { useMutation, useQueryClient } from "react-query";
 
 import { endpoints, queryKeys } from "../../constants";
 import { Property } from "../../types/property";
+import { useUser } from "../useUser";
 
-const deleteProperty = (propertyID: number) =>
-  axios.delete(`${endpoints.deleteProperty}${propertyID}`);
+const deleteProperty = (propertyID: number, token?: string) =>
+  axios.delete(`${endpoints.deleteProperty}${propertyID}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
 export const useDeletePropertyMutation = () => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   return useMutation(
-    ({ propertyID }: { propertyID: number }) => deleteProperty(propertyID),
+    ({ propertyID }: { propertyID: number }) =>
+      deleteProperty(propertyID, user?.accessToken),
     {
       onMutate: async ({ propertyID }) => {
         await queryClient.cancelQueries(queryKeys.myProperties);

@@ -10,10 +10,16 @@ import { SelectedConversation } from "../../types/conversation";
 
 const fetchConversation = async (
   conversationID: number,
-  userID?: number
+  userID?: number,
+  token?: string
 ): Promise<SelectedConversation> => {
   const response = await axios.get(
-    `${endpoints.getConversationByID}${conversationID}`
+    `${endpoints.getConversationByID}${conversationID}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   const data: ConversationRes = response.data;
@@ -59,7 +65,7 @@ export const useSelectedConversationQuery = (conversationID: number) => {
   const { user } = useUser();
 
   return useQuery(queryKeys.selectedConversation, () =>
-    fetchConversation(conversationID, user?.ID)
+    fetchConversation(conversationID, user?.ID, user?.accessToken)
   );
 };
 

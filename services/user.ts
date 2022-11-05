@@ -106,15 +106,33 @@ export const resetPassword = async (password: string, token: string) => {
 export const alterPushToken = (
   userID: number,
   op: "add" | "remove",
-  token: string
+  pushToken: string,
+  accessToken: string
 ) =>
-  axios.patch(endpoints.alterPushToken(userID), {
-    op,
-    token,
-  });
+  axios.patch(
+    endpoints.alterPushToken(userID),
+    {
+      op,
+      token: pushToken,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
 
 export const alterAllowsNotifications = (
   userID: number,
-  allowsNotifications: boolean
+  allowsNotifications: boolean,
+  accessToken: string
 ) =>
-  axios.patch(endpoints.allowsNotifications(userID), { allowsNotifications });
+  axios.patch(
+    endpoints.allowsNotifications(userID),
+    { allowsNotifications },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );

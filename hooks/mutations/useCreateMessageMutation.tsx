@@ -9,22 +9,33 @@ import {
   Author,
 } from "../../types/conversation";
 import { MessageType } from "@flyerhq/react-native-chat-ui/lib/types";
+import { useUser } from "../useUser";
 
 const createMessage = (
   conversationID: number,
   senderID: number,
   receiverID: number,
-  text: string
+  text: string,
+  token?: string
 ) =>
-  axios.post(`${endpoints.createMessage}`, {
-    conversationID,
-    senderID,
-    receiverID,
-    text,
-  });
+  axios.post(
+    `${endpoints.createMessage}`,
+    {
+      conversationID,
+      senderID,
+      receiverID,
+      text,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
 export const useCreateMessageMutation = () => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   return useMutation(
     ({
@@ -39,7 +50,14 @@ export const useCreateMessageMutation = () => {
       senderID: number;
       receiverID: number;
       text: string;
-    }) => createMessage(conversationID, senderID, receiverID, text),
+    }) =>
+      createMessage(
+        conversationID,
+        senderID,
+        receiverID,
+        text,
+        user?.accessToken
+      ),
     {
       onMutate: async ({
         author,

@@ -25,6 +25,8 @@ const apartment = "/apartment";
 const review = "/review";
 const conversation = "/conversation";
 const messages = "/messages";
+const refresh = "/refresh";
+const refreshTokenEndpoint = serverUrl + refresh;
 const locationEndpoint = serverUrl + location;
 const userEndpoint = serverUrl + user;
 const propertyEndpoint = serverUrl + property;
@@ -50,7 +52,7 @@ export const endpoints = {
   apple: userEndpoint + "/apple",
   forgotPassword: userEndpoint + "/forgotpassword",
   resetPassword: userEndpoint + "/resetpassword",
-  createProperty: propertyEndpoint + "/create",
+  createProperty: propertyEndpoint,
   getPropertyByID: propertyEndpoint + "/",
   getContactedPropertiesByUserID: contactedEndpoint,
   getPropertiesByUserID: propertyEndpoint + "/userid/",
@@ -64,10 +66,11 @@ export const endpoints = {
   alterSavedPropertiesByUserID: savedEndpoint,
   alterPushToken: pushTokenEndpoint,
   allowsNotifications: allowsNotificationsEndpoint,
-  createConversation: conversationEndpoint + "/",
+  createConversation: conversationEndpoint,
   getConversationByID: conversationEndpoint + "/",
   getConversationsByUserID: conversationEndpoint + "/user/",
-  createMessage: messagesEndpoint + "/",
+  createMessage: messagesEndpoint,
+  refreshTokens: refreshTokenEndpoint,
 };
 
 export const queryKeys = {

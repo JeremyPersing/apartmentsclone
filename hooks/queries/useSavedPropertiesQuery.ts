@@ -5,11 +5,19 @@ import { endpoints, queryKeys } from "../../constants";
 import { Property } from "../../types/property";
 import { useUser } from "../useUser";
 
-const fetchProperties = async (userID?: number): Promise<Property[]> => {
+const fetchProperties = async (
+  userID?: number,
+  token?: string
+): Promise<Property[]> => {
   if (!userID) return [];
 
   const response = await axios.get(
-    endpoints.getSavedPropertiesByUserID(userID)
+    endpoints.getSavedPropertiesByUserID(userID),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   const data: Property[] = response.data;
@@ -21,7 +29,11 @@ const fetchProperties = async (userID?: number): Promise<Property[]> => {
 export const useSavedPropertiesQuery = () => {
   const { user } = useUser();
 
-  return useQuery(queryKeys.savedProperties, () => fetchProperties(user?.ID), {
-    retry: false,
-  });
+  return useQuery(
+    queryKeys.savedProperties,
+    () => fetchProperties(user?.ID, user?.accessToken),
+    {
+      retry: false,
+    }
+  );
 };
