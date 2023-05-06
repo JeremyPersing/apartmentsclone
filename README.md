@@ -38,7 +38,7 @@ _The project uses the expo SDK 45, and the current version is 48. Implementation
 - Login with Google
 - Login with Facebook
 - Login with Apple
-- Login and Register with an email and passwor
+- Login and Register with an email and password
 - Use JWTs
 - Deploy servers using Docker and Dockerhub
 - Create a domain for free 
