@@ -1,5 +1,8 @@
 # Apartments.com Clone Client
 
+![1](https://user-images.githubusercontent.com/34422870/236635019-64145e75-5b91-4652-a2a0-9a1bffd1487e.png)
+![2](https://user-images.githubusercontent.com/34422870/236635046-e88256f7-12e1-49bc-8dcf-4cadd5a0db38.png)
+
 ## Background
 Prior to creating this project I had worked on a React Native/Expo project and noticed that most, if not all, of the video tuturials online used Firebase in their implementation of things. I found this to be annoying at times, because our team wasn't using Firebase and there was no variety for how to implement things. Also finding a genuine implementation for Expo Push Notifications on YouTube was impossible at that time. Luckily the expo documentation had everything that we needed, but at the end of that experience I thought that it would be useful to show that you don't just have to use Firebase when building out your React Native project.
 
